@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from models import db, users,account_history,notice_board,report,report_comments
-
+from models import *
 
 
 app = Flask(__name__)
@@ -18,11 +17,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 
+
 #HomePage route
 @app.route("/")
 def index():
    
-    return "Database working"
+    return "This is the first page"
 
 @app.route("/create_user")
 def create_user():

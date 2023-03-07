@@ -61,7 +61,7 @@ class report(db.Model):
         upvoteCount = db.Column(db.Integer)
     
         #relationships here
-        user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'), nullable =False)
+        user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'))
 
         """relationship with reports_comments table"""
         report_comment = db.relationship("report_comments", backref='report', lazy =True)
