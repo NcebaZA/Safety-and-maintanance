@@ -1,25 +1,9 @@
 {% extends "base.html" %}
 
-{% block gallery %}
-<div class="container-fluid">
-    <div class="col-10 mx-auto">
-        {% include 'filters_bar.html' %}
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th scope="col">Title</th>
-                    <th scope="col">Nature of work</th>
-                    <th scope="col">Campus</th>
-                    <th scope="col">Block</th>
-                    <th scope="col">Priority</th>
-                    <th>&nbsp;</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Each instance of "issue_card.html" will be stored here -->
-                {% include 'gallery_item.html' %}
-            </tbody>
-        </table>
-    </div>
+{% block content %}
+<div class="container">
+    <div class="container-fluid">{% include 'filters_bar.html' %}</div>
+    <div class="container-fluid">{% include 'issue_card.html' %}</div>
+    <div class="container-fluid">{% include 'pagination.html' %}</div>
 </div>
 {% endblock %}
