@@ -25,7 +25,7 @@ def index():
     return "This is the first page"
 
 
-
+"""The function below is a test of adding a user to the database table"""
 @app.route("/create_user")
 def create_user():
         new_user = users(first_name = "Khanya", surname="DaSilva", email= "somehting@microsoft.com", password="asadsdasdasd", username = "hello from the other side", user_role="admin")
@@ -36,6 +36,7 @@ def create_user():
 
 listUser=[]
 
+"""The function below is a test of gettinng all users from database table"""
 @app.route("/get_users")
 def get_users():
     all_users = users.query.all()
