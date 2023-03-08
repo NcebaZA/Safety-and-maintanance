@@ -1,0 +1,43 @@
+<!--
+    Component: Issues Table
+    Desc: Used to contain all instances of "issue_card.html" template
+    Notes: Still in development; still need to include pagianation and filters bar.
+-->
+
+{% extends "base.html" %}
+
+<!-- 
+    Dependecies
+-->
+{% block head %}
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+{% endblock %}
+
+<!-- 
+    Table component definition
+-->
+
+{% block gallery %}
+<div class="container-fluid">
+    <div class="col-10 mx-auto">
+        {% include 'filters_bar.html' %}
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Nature of work</th>
+                    <th scope="col">Campus</th>
+                    <th scope="col">Block</th>
+                    <th scope="col">Priority</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Each instance of "issue_card.html" will be stored here -->
+                {% include 'gallery_item.html' %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

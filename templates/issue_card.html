@@ -1,0 +1,19 @@
+<!--
+    Component: Issue Card
+    Desc: Used inside the "issues_table.html" template
+        to display issue items.
+-->
+<!--{% for item in tdata %}-->
+<tr onclick="window.location=`{{item['link']}}`" style="cursor: pointer;">
+    <th scope="row" class="col-4">{{item["title"]}}</th>
+    <td>{{item["nature_of_work"]}}</td>
+    <td>{{item["campus"]}}</td>
+    <td>{{item["block"]}}</td>
+    <td>{{item["priority"]}}</td>
+    <td>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 96 960 960" width="24">
+            <path d="m480 896-42-43 247-247H160v-60h525L438 299l42-43 320 320-320 320Z" />
+        </svg>
+    </td>
+</tr>
+<!--{% endfor %}-->
