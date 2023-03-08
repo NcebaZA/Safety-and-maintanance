@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
@@ -47,7 +47,13 @@ def get_users():
     return f"These are users in the system {listUser}"
 
        
+@app.route("/forgot_password")
+def forgot_password():
+     return render_template("forgot-password1.html")
 
+@app.route("/issues_table")
+def show_issues_table():
+     return render_template("issues_table.html")
 
 
 

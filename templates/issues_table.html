@@ -21,7 +21,7 @@
 {% block gallery %}
 <div class="container-fluid">
     <div class="col-10 mx-auto">
-        {% include 'filters_bar.html' %}
+      
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -35,7 +35,7 @@
             </thead>
             <tbody>
                 <!-- Each instance of "issue_card.html" will be stored here -->
-                {% include 'gallery_item.html' %}
+                {% include "issue_card.html" %}
             </tbody>
         </table>
     </div>
