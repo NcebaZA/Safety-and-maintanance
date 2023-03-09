@@ -1,40 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=>, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<center>
-<h1>DUT Safety and Maintenance</h1>
-<br>
-<br>
+{% extends "base.html" %}
+{% block title %}Login {% endblock %}
 
-<div style="border: 2px solid black;"></div>
-<h3>Sign in using your login
-    credentials.</h3>
-    <br>
-<body>
-   <div><label for="name">Email Address:</label></div> 
-<input type="text" id="name" name="name" style="width: 200px; height: 25px;">
-<br>
-<br>
-<div><label for="name">Password:</label></div> 
-<input type="text" id="name" name="name" style="width: 200px; height: 25px;">
-<br>
-<br>
-<div> <a href="forgot-password.html">Forgot your password</a></div>
-<br>
-<br>
-<div><button style="width: 100px; height: 40px;">Login</button>
+{% block content %}
+
+<div class=" container-md position-absolute top-50 start-50 translate-middle col-lg-5">
+  <div class=" vertical-center-row mx-auto py-auto px-auto card shadow-lg p-3  bg-body rounded  ">
+    <div class="row justify-content-center align-items-center g-1">
+      <div class="col-sm  "> <img src="https://www.dut.ac.za/DUT-Logo_new.png" class="img-fluid align"></div>
+      <div class="col">
+        <div class="fs-2 fw-bold text-center ">DUT Safety and Maintenance </div>
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="fs-5 fw-normarl text-center mt-3">Sign in using your login credentials </div>
+
+      <form class="mt-2">
+        <div class="form-group">
+          <label for="exampleInputEmail1" class="mb-2 mt-2 fw-semibold">Email address</label>
+          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+            placeholder="Enter email">
+
+          <div class="mb-1 mt-3 fw-semibold">
+            <label for="exampleInputPassword1" class="form-label">Password</label>
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter Password">
+          </div>
+          <div class="mx-10 mt-2 mb-2"><a href="/forgot_password">Forgot Password?</a></div>
+          <div id="submit_div" style="text-align:center" class="mt-1">
+            <button type="submit" class=" mt-2 btn btn-primary ">Login</button>
+          </div>
+      </form>
+    </div>
+  </div>
 </div>
-</div>
-</center>
 
-  <body style="background-color: rgba(172, 170, 170, 0.796);">
-    <!-- Your HTML content goes here -->
-  </body>
-
-</body>
-</html>
+{% endblock %}
