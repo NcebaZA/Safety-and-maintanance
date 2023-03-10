@@ -2,6 +2,9 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
+# testing by M Mngadi
+from random import randint
+# end testing
 
 app = Flask(__name__)
 
@@ -64,20 +67,12 @@ def show_issues_table():
 
 
 # dummy data to test that the table works, will be removed later - M Mngadi
-tdata_local = [
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"}
-    ];
+tdata_local = [];
+tcamp = ["Steve Biko", "Ritson", "ML Sultan"]
+tpriority = ["low", "mid", "high"]
+
+for i in range(1,12):
+    tdata_local.append({"title":str(i),"campus":tcamp[randint(0,2)] ,"block":chr(randint(65,90))+" Block","priority":tpriority[randint(0,2)]})
 
 #admin page route
 """You can add the admin page route here"""
