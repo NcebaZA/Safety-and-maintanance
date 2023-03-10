@@ -65,7 +65,19 @@ class report(db.Model):
 
         """relationship with reports_comments table"""
         report_comment = db.relationship("report_comments", backref='report', lazy =True)
+        #relationship here
+        report_image = db.relationship("image", backref="report",lazy=True)
 
+
+#images
+class image(db.Model):
+        id= db.Column(db.Integer, primary_key=True)
+        issue_image=db.Column(db.LargeBinary, nullable=True)
+
+#relationshps here
+        report_id= db.Column(db.Integer, db.ForeignKey('report.id',ondelete = 'Cascade'))
+
+        
 #report comments
 class report_comments(db.Model):
         id = db.Column(db.Integer, primary_key=True)

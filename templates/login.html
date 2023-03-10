@@ -3,6 +3,7 @@
 
 {% block content %}
 
+
 <div class=" container-md position-absolute top-50 start-50 translate-middle col-lg-5">
   <div class=" vertical-center-row mx-auto py-auto px-auto card shadow-lg p-3  bg-body rounded  ">
     <div class="row justify-content-center align-items-center g-1">
@@ -15,17 +16,28 @@
 
     <div class="row">
 
-      <div class="fs-5 fw-normarl text-center mt-3">Sign in using your login credentials </div>
+      <div class="fs-5 fw-normarl text-center mt-3 mb-2">Sign in using your login credentials </div>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      <ul class=flashes>
+        {% for message in messages %}
+        <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+      
 
-      <form class="mt-2">
+      <form class="mt-2" method="POST">
         <div class="form-group">
           <label for="exampleInputEmail1" class="mb-2 mt-2 fw-semibold">Email address</label>
           <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-            placeholder="Enter email">
+            placeholder="Enter email" name="email">
 
           <div class="mb-1 mt-3 fw-semibold">
             <label for="exampleInputPassword1" class="form-label">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter Password">
+            <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter Password"
+              name="password">
           </div>
           <div class="mx-10 mt-2 mb-2"><a href="/forgot_password">Forgot Password?</a></div>
           <div id="submit_div" style="text-align:center" class="mt-1">
