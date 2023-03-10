@@ -60,7 +60,7 @@ def login():
 
 @app.route("/admin")
 def admin():
-     return "You have succesfully been logged in"
+     return render_template("/admin_screen/admin.html")
 
 
 
