@@ -6,6 +6,7 @@ from models import *
 from random import randint
 # end testing
 
+
 app = Flask(__name__)
 
 #database config
