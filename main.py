@@ -26,7 +26,7 @@ db.init_app(app)
 #HomePage route
 @app.route("/")
 def index():
-    return "This is the first page"
+    return render_template("cards.html")
 
 
 #This shows the login page for now. No login functionality has been added
@@ -90,6 +90,23 @@ def get_users():
 @app.route("/forgot_password")
 def forgot_password():
      return render_template("forgot-password1.html")
+
+listIssues=[]
+#This function takes user to issues table. NB: no functionality has been added
+@app.route("/issues_table")
+def show_issues():
+     reported_issues = report.query.all()
+     for r in reported_issues:
+          listIssues.append({"referenceNo": r.referenceNo, 
+                                 "campus": r.campus, 
+                                 "campusBlock": r.campusBlock, 
+                                 "department": r.department,
+                                 "roomNumber": r.roomNumber,
+                                 "priorityOfIssue": r.priorityOfIssue,
+                                 "reporter": r.reporter,
+                                 "dateReported": r.dateReported,
+                                 "issueStatus": r.issueStatus})
+     return render_template("tables.html", tdata = reported_issues)
 
 #This function takes user to issues table. NB: no functionality has been added
 @app.route("/issues_table")
