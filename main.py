@@ -1,12 +1,16 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from models import *
+import flask_login
 
 # testing by M Mngadi
 from random import randint
 # end testing
 
+
 app = Flask(__name__)
+login_manager = flask_login.LoginManager()
+login_manager.login_view = "login"
 
 #database config
 database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
@@ -18,7 +22,16 @@ database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.forma
 app.config["SQLALCHEMY_DATABASE_URI"] =  "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thisismyverysecretkey"
+
 db.init_app(app)
+
+#setting up login manager
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+     return users.query.get(int(user_id))
 
 
 
@@ -26,12 +39,14 @@ db.init_app(app)
 @app.route("/")
 def index():
    
-    return "This is the first page"
+    return "This the first page"
 
 
 #This shows the login page for now. No login functionality has been added
 @app.route("/login", methods=["GET","POST"])
 def login():
+     #if user is logged no need to show login page
+       # """Login page code here"""
      if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
@@ -40,29 +55,48 @@ def login():
         print(f"email:{email}\npassword{password}")
 
         #Check if user exists
-        if user_query:
-            #if user exists check if password matches password in database
-            if user_query.password==password:
-                 return redirect(url_for('admin'))
+        if user_query :
+
+            # if user exists check passowrd
+           if user_query.password==password:
+                
+                next_page = request.args.get('next')
+                
+                flask_login.login_user(user_query)
+                return redirect(next_page or url_for('admin'))
+           
+           #if password is incorrect then give error to user that password is incorrect
+
+           elif user_query.password!=password:
+            flash('Incorrect password')
+                 
                  
 
-            #if password is incorrect then give error to user that password is incorrect
-            else:
-                  flash('Incorrect password')
-                 
+            
 
             print(user_query)
-            
+        #if user doesn't exist then show an error   
         else:
               flash('Error user does not exist')
         
      return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+     flask_login.logout_user()
+     return redirect(url_for("index"))
+
 @app.route("/admin")
+@flask_login.login_required
 def admin():
-     return render_template("/admin_screen/admin.html")
+    if flask_login.current_user.user_role=='admin':
+        return render_template("/admin_screen/admin.html")
+    else:
+         return redirect(url_for("forbidden"))
 
-
+@app.route("/forbidden")
+def forbidden():
+     return render_template("/admin_screen/access_denied.html"),403
 
 ##The function below is a test of adding a user to the database table
 @app.route("/create_user")
@@ -77,6 +111,7 @@ listUser=[]
 
 #The function below is a test of gettinng all users from database table
 @app.route("/get_users")
+@flask_login.login_required
 def get_users():
     all_users = users.query.all()
     for user in all_users:

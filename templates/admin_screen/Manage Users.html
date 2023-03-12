@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Add User Form</title>
+  </head>
+  <body>
+    <h1>Add User</h1>
+    <form>
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required><br><br>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required><br><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required><br><br>
+      <label for="role">User Role:</label>
+      <select id="role" name="role">
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+		<option value="Foreman Zoner">Foreman Zoner</option>
+      </select><br><br>
+      <button type="submit">Add User</button>
+    </form>
+
+    <div id="confirmation" style="display:none;">
+      <p>User has been added successfully!</p>
+    </div>
+
+    <script>
+      const form = document.querySelector('form');
+      const confirmation = document.querySelector('#confirmation');
+
+      form.addEventListener('submit', (event) => {
+       
+
+
