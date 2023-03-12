@@ -6,17 +6,39 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        $('input[type="checkbox"]').on('change', function () {
+            var filters = {};
+            $('input[type="checkbox"]:checked').each(function () {
+                var filterName = $(this).attr('name');
+                var filterValue = $(this).val();
+                if (filters[filterName]) {
+                    filters[filterName].push(filterValue);
+                } else {
+                    filters[filterName] = [filterValue];
+                }
+            });
+            $.ajax({
+                url: '/filter',
+                data: JSON.stringify(filters),
+                type: 'POST',
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    console.log(response);
+                }
+            });
+        });
+
         $('#search_text').keyup(function () {
             var search = $(this).val();
             $.ajax({
                 url: "/issues_table",
                 method: "POST",
-                data: { text : search },
+                data: { search_text: search },
                 success: function (res) {
                     $('#search_text').html(res.search_content)
                     $('#issue-items').html(res.items)
-                    if(res.redirect){
-                        window.history.pushState({},"", res.redirect);
+                    if (res.redirect) {
+                        window.history.pushState({}, "", res.redirect);
                     }
                 }
             });
