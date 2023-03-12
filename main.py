@@ -26,7 +26,6 @@ db.init_app(app)
 #HomePage route
 @app.route("/")
 def index():
-   
     return "This is the first page"
 
 
