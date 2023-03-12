@@ -1,12 +1,15 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import flask_login
 
 
 db = SQLAlchemy()
 
+
+
 #user table
-class users(db.Model):
+class users(db.Model,flask_login.UserMixin):
 
         id = db.Column(db.Integer, primary_key=True)
         first_name = db.Column(db.String(255), nullable=False)
@@ -30,7 +33,6 @@ class users(db.Model):
         """relationship with notice board"""
         notice = db.relationship("notice_board", backref="users", lazy=True)       
 
-       
 
 
 #account history table
