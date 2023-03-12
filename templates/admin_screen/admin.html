@@ -1,5 +1,109 @@
-{%extends "base.html"%}
->{% block title %}Admin{% endblock %}
-{%block content%}
-<div>Hello admin</div>
-{%endblock%}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin Dashboard</title>
+
+    
+  <head>
+    <title>Side Navigation Bar</title>
+    <style>
+      /* Side navigation bar */
+      .sidenav {
+        height: 100%;
+        width: 200px;
+        position: fixed;
+        z-index: 1;
+        top: 0;
+        left: 0;
+        background-color: #333;
+        overflow-x: hidden;
+        padding-top: 20px;
+      }
+      
+      /* Side navigation bar links */
+      .sidenav a {
+        padding: 6px 8px 6px 16px;
+        text-decoration: none;
+        font-size: 20px;
+        color: #f1f1f1;
+        display: block;
+      }
+      
+      /* Side navigation bar links hover effect */
+      .sidenav a:hover {
+        color: #f2f2f2;
+        background-color: #444;
+      }
+      
+      /* Main content */
+      .main {
+        margin-left: 200px;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidenav">
+      <a href="#">Dashboard</a>
+      <a href="Manage Users.html">Manage Users</a>
+      <a href="Reports.html">Reports</a>
+      <a href="Notice.html">Notice Board</a>
+    </div>
+    <div class="main">
+      
+    <h1>Hello Admin</h1>
+    <style>
+      /* Dashboard container */
+      .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      
+      /* Dashboard card */
+      .card {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0px 2px 5px #ccc;
+        margin: 10px;
+        padding: 10px;
+        width: 250px;
+      }
+      
+      /* Card header */
+      .card-header {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      
+      /* Card content */
+      .card-content {
+        font-size: 1em;
+        line-height: 1.5em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="card">
+        <div class="card-header">Users</div>
+        <div class="card-content">
+          <p>Total users: 100</p>
+          <p>New users today: 5</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">Reports</div>
+        <div class="card-content">
+          <p>Number of reports: 50</p>
+          <p>Completed tasks: 17</p>
+        </div>
+      </div>
+    </div>
+</body>
+
+<P>Would you like to report an issue? If Yes, <a href="Manage Users.html">Click Here.</a></P>
+    
+  </body>
+</html>
