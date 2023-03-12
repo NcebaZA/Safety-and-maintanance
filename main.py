@@ -7,6 +7,7 @@ import flask_login
 from random import randint
 # end testing
 
+
 app = Flask(__name__)
 login_manager = flask_login.LoginManager()
 login_manager.login_view = "login"
