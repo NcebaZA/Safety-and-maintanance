@@ -1,12 +1,19 @@
-{% for item in tdata %}
+{% if pages.items %}
+{% for issue in pages.items %}
 <div class="row border-bottom" style="cursor:pointer">
     <div class="card" style="--bs-card-border-radius:none;--bs-card-border-color:none;">
         <div class="card-body">
-            <h6 class="card-title">{{item["title"]}}</h6>
-            <p class="card-text">{{item["campus"]}} | {{item["block"]}} |
-                {{item["priority"]}}
+            <h6 class="card-title">{{issue["title"]}}</h6>
+            <p class="card-text">{{issue["campus"]}} | {{issue["block"]}} |
+                {{issue["priority"]}}
             </p>
         </div>
     </div>
 </div>
 {% endfor %}
+<div class="container">{% include 'pagination.html'%}</div>
+{% else %}
+<div class="d-flex justify-content-center">
+    <h3 class="fw-light">no items</h3>
+</div>
+{% endif %}

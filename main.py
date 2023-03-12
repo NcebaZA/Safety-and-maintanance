@@ -1,11 +1,11 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
 # testing by M Mngadi
 from random import randint
+from sqlalchemy.exc import IntegrityError
 # end testing
-
 
 app = Flask(__name__)
 
@@ -14,26 +14,24 @@ database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.forma
     dbuser="bgoscsfb",
     dbpass="xOIQsgnH2fM5hLsfmVLT_UZbrdlPkD78",
     dbhost="isilo.db.elephantsql.com",
-    dbname="bgoscsfb"
-)
-app.config["SQLALCHEMY_DATABASE_URI"] =  "sqlite:///project.db"
+    dbname="bgoscsfb")
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thisismyverysecretkey"
 db.init_app(app)
 
 
-
 #HomePage route
 @app.route("/")
 def index():
-   
+
     return "This is the first page"
 
 
 #This shows the login page for now. No login functionality has been added
-@app.route("/login", methods=["GET","POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-     if request.method == "POST":
+    if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
         user_query = users.query.filter_by(email=email).first()
@@ -43,76 +41,134 @@ def login():
         #Check if user exists
         if user_query:
             #if user exists check if password matches password in database
-            if user_query.password==password:
-                 return redirect(url_for('admin'))
-                 
+            if user_query.password == password:
+                return redirect(url_for('admin'))
 
             #if password is incorrect then give error to user that password is incorrect
             else:
-                  flash('Incorrect password')
-                 
+                flash('Incorrect password')
 
             print(user_query)
-            
+
         else:
-              flash('Error user does not exist')
-        
-     return render_template("login.html")
+            flash('Error user does not exist')
+
+    return render_template("login.html")
+
 
 @app.route("/admin")
 def admin():
-     return "You have succesfully been logged in"
-
+    return "You have succesfully been logged in"
 
 
 ##The function below is a test of adding a user to the database table
 @app.route("/create_user")
 def create_user():
-        new_user = users(first_name = "Nokthula", surname="Makhanya", email= "22023482@dut4life.ac.za", password="2023", username = "thuli012", user_role="admin")
-        db.session.add(new_user)
-        db.session.commit()
+    new_user = users(first_name="Nokthula",
+                     surname="Makhanya",
+                     email="22023482@dut4life.ac.za",
+                     password="2023",
+                     username="thuli012",
+                     user_role="admin")
+    db.session.add(new_user)
+    db.session.commit()
 
-        return redirect(url_for("login"))
+    return redirect(url_for("login"))
 
-listUser=[]
+
+listUser = []
+
 
 #The function below is a test of gettinng all users from database table
 @app.route("/get_users")
 def get_users():
     all_users = users.query.all()
     for user in all_users:
-          listUser.append(user.email)
-          print(user)
+        listUser.append(user.email)
+        print(user)
 
     return f"These are users in the system {listUser}"
 
 
-#This function takes user to forgot passsword page. NB: not functionality has been added 
+#This function takes user to forgot passsword page. NB: not functionality has been added
 @app.route("/forgot_password")
 def forgot_password():
-     return render_template("forgot-password1.html")
-
-#This function takes user to issues table. NB: no functionality has been added
-@app.route("/issues_table")
-def show_issues_table():
-     return render_template("issues_table.html",tdata=tdata_local)
+    return render_template("forgot-password1.html")
 
 
-# dummy data to test that the table works, will be removed later - M Mngadi
-tdata_local = [
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"}
-    ];
+#This function takes user to issues table.
+@app.route("/issues_table", methods=['GET', 'POST'])
+def show_filtered_issues():
+    page = request.args.get('page',1,type=int)
+    keyword = request.args.get('keyword','',type=str)
+    global search_text
+
+    l = {'cur_args' : {}, 'pages' : tdataDB.query.paginate(page=page, per_page=4)}
+
+    if keyword == '': 
+        l['pages']  = tdataDB.query.paginate(page=page, per_page=4)
+    else:
+        l['pages'] = tdataDB.query.filter(tdataDB.title.like(f"{keyword}%")).paginate(page=page, per_page=4)
+    
+    if request.method == 'GET':
+        l['cur_args'] = request.args.to_dict()
+
+        return render_template("issues_table.html", pages=l['pages'], args=l['cur_args'])
+
+    if request.method == 'POST':
+        search_text = request.form['text']
+        l['cur_args']['keyword']=search_text
+        
+        l['pages'] = tdataDB.query.filter(tdataDB.title.like(f"{l['cur_args']['keyword']}%")).paginate(page=page, per_page=4)
+        
+        cur_url = request.full_path
+
+        if l['cur_args']['keyword'] != '': 
+            to_url = str(cur_url+'keyword='+ l['cur_args']['keyword'])
+        else:
+            to_url = str('/issues_table')
+
+        return jsonify({"items":render_template('issue_card.html', pages=l['pages'], args=l['cur_args']),'search_content' : l['cur_args']['keyword'], 'redirect' : to_url})
+
+# testing
+@app.route("/i_tdata")
+def i_tdata():
+    return "Completed!"
+
+
+def add_item(idPar):
+    tcamp = ["Steve Biko", "Ritson", "ML Sultan"]
+    tpriority = ["low", "mid", "high"]
+
+    new_issue = tdataDB(id=idPar,
+                        title=str(idPar),
+                        block=chr(randint(65, 90)) + " block",
+                        campus=tcamp[randint(0, 2)],
+                        priority=tpriority[randint(0, 2)])
+    db.session.add(new_issue)
+
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+
+
+def remove_item(id):
+    item = db.db.get_or_404(tdataDB, id)
+    db.session.delete(item)
+    db.session.commit()
+
+
+@app.route("/get_issues")
+def get_issues():
+
+    tdata_local = []
+    all_issues = tdataDB.query.all()
+    for item in all_issues:
+        tdata_local.append(item.title)
+
+    return f"Issues = {tdata_local}"
+
 
 #admin page route
 """You can add the admin page route here"""
@@ -120,8 +176,6 @@ tdata_local = [
 #Report page route
 """Add report page route info here"""
 
-
 if __name__ == "__main__":
-    
+
     app.run(debug=True)
- 
