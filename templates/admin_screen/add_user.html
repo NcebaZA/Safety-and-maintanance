@@ -9,13 +9,15 @@
 
             <div class="heading-container text-center">
                 <h1>Enter user details</h1>
-                <div>{% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                       {% for message in messages %}
-                          {{ message }}
-                       {% endfor %}
-                    {% endif %}
-                 {% endwith %}</div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                  {% for message in messages %}
+                  <div class="alert alert-danger">{{ message }}</div>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
             </div>
             <form method="POST">
 

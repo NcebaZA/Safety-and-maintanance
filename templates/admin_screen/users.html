@@ -1,0 +1,14 @@
+{%extends "base.html"%}
+{% block content %}
+
+<!-- Setting values -->
+
+{%set table_title="Users"%}
+
+<!-- Set which label should be active (bold) on the navbar -->
+
+{%set is_active3="active"%}
+{% include "/admin_screen/nav_bar.html" %}
+{% include "/admin_screen/table_user.html" %}
+<!-- User view here -->
+{% endblock %}
