@@ -90,9 +90,48 @@ def logout():
 @flask_login.login_required
 def admin():
     if flask_login.current_user.user_role=='admin':
-        return render_template("/admin_screen/admin.html")
+        users_count = users.query.count()
+        return render_template("/admin_screen/admin.html",users_count=users_count)
     else:
+        
          return redirect(url_for("forbidden"))
+
+@app.route("/admin/add_user", methods=["POST","GET"])
+@flask_login.login_required
+def add_user():
+     if flask_login.current_user.user_role=='admin'and request.method=="GET":
+        return render_template("/admin_screen/add_user.html")
+     #check if current logged in user has admin privilage and if so allow them to access the page
+     if flask_login.current_user.user_role=='admin' and request.method=="POST":
+          user_name = request.form.get("user_name")
+          name = request.form.get("name")
+          surname = request.form.get("surname")
+          email = request.form.get("email")
+          password = request.form.get("password")
+          username = request.form.get("username")
+          user_role = request.form.get("user_role")
+
+          print(f"User Name:{user_name}\nName: {name}\nSurname: {surname}\nPassword:{password}\nUsername: {username}\nUser Role: {user_role}")
+          
+          #Check if user name or email has already been taken
+          if users.query.filter_by(email=email).first() or users.query.filter_by(username=username).first():
+               
+
+               return flash("Username or email already in use")
+               
+          
+          
+          #if it has not been taken then create a new user
+          else:
+            new_user = users(first_name=name, surname=surname, email=email,password=password, username=username,user_role=user_role)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for("admin"))
+     return flash("Error username or email already used")
+
+
+    
+
 
 @app.route("/forbidden")
 def forbidden():
@@ -132,21 +171,7 @@ def show_issues_table():
      return render_template("issues_table.html",tdata=tdata_local)
 
 
-# dummy data to test that the table works, will be removed later - M Mngadi
-tdata_local = [
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"}
-    ];
+
 
 #admin page route
 """You can add the admin page route here"""
