@@ -1,0 +1,45 @@
+{%extends "base.html"%}
+{% block title %}Admin{% endblock %}
+{%block content%}
+{% include "/admin_screen/nav_bar.html" %}
+
+<div class=" container px-4 mt-4">
+    <div class="fs-2">Welcome Admin</div>
+    
+{% if error %}
+<ul class=flashes>
+    
+    <div class="alert alert-danger">{{ error }}</div>
+  </ul>
+  {% endif %}
+  
+
+    <div class="row">
+        <div class=" col">
+            {% set name = "Users" %}
+            {% set link1 ="https://www.youtube.com" %}
+            {% set link1_text ="View all users" %}
+            {% set image ="https://img.icons8.com/office/56/000000/user.png" %}
+            {%set number= users_count%}
+            {% include "/admin_screen/admin_cards.html" %}</div>
+
+
+
+        <div class="col">
+            {% set image ="https://img.icons8.com/external-tal-revivo-fresh-tal-revivo/56/null/external-wpforms-the-best-wordpress-forms-plugin-service-logo-fresh-tal-revivo.png" %}    {% set link1_text ="Reports" %}
+            {% set name = "Reports" %} {% include '/admin_screen/admin_cards.html' %}
+        </div>
+
+
+    </div>
+    <div class="row mt-4">
+        <div clas="col">{% set name = "Task Completed" %}
+            {% set link1_text ="Completed Tasks" %}
+            {% set image ="https://img.icons8.com/dusk/56/null/task-completed.png" %}
+            {% include '/admin_screen/admin_cards.html' %}
+        </div>
+
+    </div>
+</div>
+
+{%endblock%}

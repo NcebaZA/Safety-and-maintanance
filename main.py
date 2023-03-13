@@ -1,12 +1,16 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 from models import *
+import flask_login
 
 # testing by M Mngadi
 from random import randint
 # end testing
 
+
 app = Flask(__name__)
+login_manager = flask_login.LoginManager()
+login_manager.login_view = "login"
 
 #database config
 database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
@@ -18,7 +22,16 @@ database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.forma
 app.config["SQLALCHEMY_DATABASE_URI"] =  "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thisismyverysecretkey"
+
 db.init_app(app)
+
+#setting up login manager
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+     return users.query.get(int(user_id))
 
 
 
@@ -26,12 +39,14 @@ db.init_app(app)
 @app.route("/")
 def index():
    
-    return "This is the first page"
+    return "This the first page"
 
 
 #This shows the login page for now. No login functionality has been added
 @app.route("/login", methods=["GET","POST"])
 def login():
+     #if user is logged no need to show login page
+       # """Login page code here"""
      if request.method == "POST":
         email = request.form.get("email")
         password = request.form.get("password")
@@ -40,29 +55,87 @@ def login():
         print(f"email:{email}\npassword{password}")
 
         #Check if user exists
-        if user_query:
-            #if user exists check if password matches password in database
-            if user_query.password==password:
-                 return redirect(url_for('admin'))
+        if user_query :
+
+            # if user exists check passowrd
+           if user_query.password==password:
+                
+                next_page = request.args.get('next')
+                
+                flask_login.login_user(user_query)
+                return redirect(next_page or url_for('admin'))
+           
+           #if password is incorrect then give error to user that password is incorrect
+
+           elif user_query.password!=password:
+            flash('Incorrect password')
+                 
                  
 
-            #if password is incorrect then give error to user that password is incorrect
-            else:
-                  flash('Incorrect password')
-                 
+            
 
             print(user_query)
-            
+        #if user doesn't exist then show an error   
         else:
               flash('Error user does not exist')
         
      return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+     flask_login.logout_user()
+     return redirect(url_for("index"))
+
 @app.route("/admin")
+@flask_login.login_required
 def admin():
-     return render_template("/admin_screen/admin.html")
+    if flask_login.current_user.user_role=='admin':
+        users_count = users.query.count()
+        return render_template("/admin_screen/admin.html",users_count=users_count)
+    else:
+        
+         return redirect(url_for("forbidden"))
+
+@app.route("/admin/add_user", methods=["POST","GET"])
+@flask_login.login_required
+def add_user():
+     if flask_login.current_user.user_role=='admin'and request.method=="GET":
+        return render_template("/admin_screen/add_user.html")
+     #check if current logged in user has admin privilage and if so allow them to access the page
+     if flask_login.current_user.user_role=='admin' and request.method=="POST":
+          user_name = request.form.get("user_name")
+          name = request.form.get("name")
+          surname = request.form.get("surname")
+          email = request.form.get("email")
+          password = request.form.get("password")
+          username = request.form.get("username")
+          user_role = request.form.get("user_role")
+
+          print(f"User Name:{user_name}\nName: {name}\nSurname: {surname}\nPassword:{password}\nUsername: {username}\nUser Role: {user_role}")
+          
+          #Check if user name or email has already been taken
+          if users.query.filter_by(email=email).first() or users.query.filter_by(username=username).first():
+               
+
+               return flash("Username or email already in use")
+               
+          
+          
+          #if it has not been taken then create a new user
+          else:
+            new_user = users(first_name=name, surname=surname, email=email,password=password, username=username,user_role=user_role)
+            db.session.add(new_user)
+            db.session.commit()
+            return redirect(url_for("admin"))
+     return flash("Error username or email already used")
 
 
+    
+
+
+@app.route("/forbidden")
+def forbidden():
+     return render_template("/admin_screen/access_denied.html"),403
 
 ##The function below is a test of adding a user to the database table
 @app.route("/create_user")
@@ -77,6 +150,7 @@ listUser=[]
 
 #The function below is a test of gettinng all users from database table
 @app.route("/get_users")
+@flask_login.login_required
 def get_users():
     all_users = users.query.all()
     for user in all_users:
@@ -97,21 +171,7 @@ def show_issues_table():
      return render_template("issues_table.html",tdata=tdata_local)
 
 
-# dummy data to test that the table works, will be removed later - M Mngadi
-tdata_local = [
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"},
-    {"title":"material confined likewise it humanity raillery an unpacked as he.","nature_of_work":"Electical","campus":"Steve Biko","block":"S Block","priority":"medium", "link":"https://www.google.com"},
-    {"title":"Kept in sent gave feel will oh it we. Has pleasure procured men laughing shutters nay.","nature_of_work":"Plumbing","campus":"Ritson","block":"D Block","priority":"high", "link":"https://www.bing.com"}
-    ];
+
 
 #admin page route
 """You can add the admin page route here"""
