@@ -98,39 +98,87 @@ def forgot_password():
 
 #This function takes user to issues table.
 @app.route("/issues_table", methods=['GET', 'POST'])
-def show_filtered_issues():
-    page = request.args.get('page',1,type=int)
-    keyword = request.args.get('keyword','',type=str)
-    global search_text
+def show_issues():
+    page = request.args.get('page', 1, type=int)
+    keyword = request.args.get('keyword', '', type=str)
+    campus = request.args.get('campus', '', type=str)
 
-    l = {'cur_args' : {}, 'pages' : tdataDB.query.paginate(page=page, per_page=4)}
+    global l
 
-    if keyword == '': 
-        l['pages']  = tdataDB.query.paginate(page=page, per_page=4)
-    else:
-        l['pages'] = tdataDB.query.filter(tdataDB.title.like(f"{keyword}%")).paginate(page=page, per_page=4)
-    
     if request.method == 'GET':
-        l['cur_args'] = request.args.to_dict()
+        l = {'cur_args': request.args.to_dict() , 'pages': {}}
+        print(f"Inside GET | {l['cur_args']}" )
 
-        return render_template("issues_table.html", pages=l['pages'], args=l['cur_args'])
+        l['pages'] = tdataDB.query
+        
+        if keyword!='':
+            l['pages'] = l['pages'].filter(tdataDB.title.like(f'{keyword}%'))
+        elif campus!='':
+            l['pages'] = l['pages'].filter_by(campus=(f'{campus}'))
+
+        l['pages'] = l['pages'].paginate(page=page,per_page=4)
+
+        return render_template("issues_table.html",
+                               pages=l['pages'],
+                               args=l['cur_args'])
 
     if request.method == 'POST':
-        search_text = request.form['text']
-        l['cur_args']['keyword']=search_text
-        
-        l['pages'] = tdataDB.query.filter(tdataDB.title.like(f"{l['cur_args']['keyword']}%")).paginate(page=page, per_page=4)
-        
-        cur_url = request.full_path
+        search_for = request.form['search_for']
 
-        if l['cur_args']['keyword'] != '': 
-            to_url = str(cur_url+'keyword='+ l['cur_args']['keyword'])
+        l = {'cur_args': request.args.to_dict() , 'pages': {}}
+        print(f"Inside POST | {l['cur_args']}")
+
+        l['pages']=tdataDB.query.filter(tdataDB.title.like(f'{search_for}%')).paginate(page=1,per_page=4)
+
+        to_url = request.full_path
+        if to_url[-1]=='?':
+            to_url += f"keyword={search_for}"
+            l['cur_args']['keyword']=search_for
         else:
-            to_url = str('/issues_table')
+            to_url = request.path
 
-        return jsonify({"items":render_template('issue_card.html', pages=l['pages'], args=l['cur_args']),'search_content' : l['cur_args']['keyword'], 'redirect' : to_url})
+        return jsonify({'status' : 'success', 'data' : {'items':render_template('issue_card.html',pages=l['pages'], args=l['cur_args']), 'search_for' : search_for, 'redirect' : to_url}})
+
 
 # testing
+@app.route('/filter', methods=['POST'])
+def filter_data():
+    data = request.json
+    # Filter the data based on the selected filters
+    # ...
+    print(f"data from json | {data}")
+    l = {
+        'cur_args': request.args.to_dict(),
+        'pages': tdataDB.query.paginate(page=1, per_page=4)
+    }
+
+    l['pages'] = tdataDB.query.filter_by(campus=data['uCampus'][0]).paginate(
+        page=1, per_page=4)
+
+    # %2B
+    to_url = request.full_path
+    if to_url[-1]=='?':
+        if data['uCampus'] != []:
+            to_url += f"campus="
+            for uitem in data['uCampus']:
+                "{data['uCampus']}"
+        #l['cur_args']['campus']=campus
+    else:
+        to_url = request.path
+
+    response = {
+        'status': 'success',
+        'data': {
+            'items':
+            render_template('issue_card.html',
+                            pages=l['pages'],
+                            args=l['cur_args']),
+            'redirect' : "./issues_table"
+        }
+    }
+    return jsonify(response)
+
+
 @app.route("/i_tdata")
 def i_tdata():
     return "Completed!"

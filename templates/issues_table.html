@@ -24,6 +24,10 @@
                 contentType: 'application/json;charset=UTF-8',
                 success: function (response) {
                     console.log(response);
+                    $('#issue-items').html(response.data.items);
+                    if (res.data.redirect) {
+                        window.history.pushState({}, "", res.data.redirect);
+                    }
                 }
             });
         });
@@ -33,12 +37,12 @@
             $.ajax({
                 url: "/issues_table",
                 method: "POST",
-                data: { search_text: search },
+                data: { search_for: search },
                 success: function (res) {
-                    $('#search_text').html(res.search_content)
-                    $('#issue-items').html(res.items)
-                    if (res.redirect) {
-                        window.history.pushState({}, "", res.redirect);
+                    $('#search_text').html(res.data.search_for)
+                    $('#issue-items').html(res.data.items)
+                    if (res.data.redirect) {
+                        window.history.pushState({}, "", res.data.redirect);
                     }
                 }
             });
