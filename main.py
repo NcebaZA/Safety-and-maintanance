@@ -91,7 +91,9 @@ def logout():
 def admin():
     if flask_login.current_user.user_role=='admin':
         users_count = users.query.count()
-        return render_template("/admin_screen/admin.html",users_count=users_count)
+        report_count = report.query.count()
+        notices_count = notice_board.query.count()
+        return render_template("/admin_screen/admin.html",users_count=users_count, report_count=report_count,notices_count=notices_count)
     else:
         
          return redirect(url_for("forbidden"))
@@ -175,6 +177,25 @@ def add_notice():
             return render_template("/admin_screen/add_notice.html")
     else:
         return "You do not have permission to access this page",403
+    
+@app.route("/admin/notices")
+@flask_login.login_required
+def show_notices():
+    if flask_login.current_user.user_role=='admin': 
+        if request.args:
+            #delete notice here
+            notice_id= request.args.get("delete")
+            notice = notice_board.query.filter_by(id=notice_id).first()
+            db.session.delete(notice)
+            db.session.commit()
+
+            return redirect(url_for("show_notices"))
+            
+        else:
+            all_notices = notice_board.query.all()
+            return render_template("/admin_screen/notices.html", all_notices=all_notices)
+        
+
 
 @app.route("/forbidden")
 def forbidden():

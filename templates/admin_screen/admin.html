@@ -26,6 +26,7 @@
 
 
         <div class="col">
+            {%set number= report_count%}
             {% set image ="https://img.icons8.com/external-tal-revivo-fresh-tal-revivo/56/null/external-wpforms-the-best-wordpress-forms-plugin-service-logo-fresh-tal-revivo.png" %}    {% set link1_text ="Reports" %}
             {% set name = "Reports" %} {% include '/admin_screen/admin_cards.html' %}
         </div>
@@ -33,8 +34,11 @@
 
     </div>
     <div class="row mt-4">
-        <div clas="col">{% set name = "Task Completed" %}
-            {% set link1_text ="Completed Tasks" %}
+        <div clas="col">
+            {%set number= notices_count%}
+            {% set name = "Notices" %}
+            {% set link1_text ="View all notices" %}
+            {% set link1 ="/admin/notices" %}
             {% set image ="https://img.icons8.com/dusk/56/null/task-completed.png" %}
             {% include '/admin_screen/admin_cards.html' %}
         </div>

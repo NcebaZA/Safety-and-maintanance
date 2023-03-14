@@ -1,17 +1,17 @@
 {%extends "base.html"%}
-{%block title%} User Management{%endblock%}
+
 {% block content %}
 
 <!-- Setting values -->
 
-{%set table_title="Users"%}
+{%set table_title="Notices"%}
 
 <!-- Set which label should be active (bold) on the navbar -->
 
-{%set is_active3="active"%}
+{%set is_active5="active"%}
 {% include "/admin_screen/nav_bar.html" %}
 <div class="py-5">
-{% include "/admin_screen/table_user.html" %}
+{% include "/admin_screen/table_notices.html" %}
 </div>
 <!-- User view here -->
 {% endblock %}
