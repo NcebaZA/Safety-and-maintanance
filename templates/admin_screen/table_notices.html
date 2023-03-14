@@ -38,6 +38,9 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+
+                                    <!-- Check if all notices is empty  -->
+                                    {%if all_notices%}
                                     <thead>
                                         <tr>
                                             <th>id</th>
@@ -48,6 +51,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        
+                                    <!-- If all_notices is not empty then generate  -->
                                         {% for notice in all_notices %}
                                         <tr>
                                             <td>{{notice.id}}</td>
@@ -59,14 +64,18 @@
                                             </a>
 
                                         </tr>
-                                        {%endfor%}
-
+                                        {% endfor %}
+                                            
+                                    <!-- Else notices are empty then show a message letting them know  -->
+                                       {% else %}
+                                            <div>There are no notices</div>
+                                        {%endif%}
 
 
 
                                     </tbody>
                                 </table>
-                                <a href="/admin/notices/delete?id">
+                                <a href="/admin/notice">
                                     <button type="" class="btn btn-primary">Add new notice</button>
                                 </a>
                             </div>

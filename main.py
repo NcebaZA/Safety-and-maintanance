@@ -1,4 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 import flask_login
@@ -23,10 +24,18 @@ app.config["SQLALCHEMY_DATABASE_URI"] =  "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thisismyverysecretkey"
 
+#initializing database to flask app
 db.init_app(app)
 
-#setting up login manager
+
+#The line of code below is for performing database migrations 
+migrate = Migrate(app, db)
+
+
+#setting up login manager which is used for user authentication
+
 login_manager.init_app(app)
+
 
 
 @login_manager.user_loader

@@ -19,6 +19,7 @@ class users(db.Model,flask_login.UserMixin):
         username = db.Column(db.String(40), nullable=False, unique = True )
         profile_picture = db.Column(db.LargeBinary)
         user_role = db.Column(db.String(25))
+        confirmed = db.Column(db.Boolean)
         #add relationships
 
         """relationship with account history table"""
@@ -50,10 +51,11 @@ class account_history(db.Model):
 
 class report(db.Model):
         id = db.Column(db.Integer, primary_key=True)
+        title = db.Column(db.String(255))
         referenceNo = db.Column(db.String(10), nullable =False)
         campus = db.Column(db.String(20), nullable =False)
         campusBlock = db.Column(db.String(5))
-        department =  db.Column(db.String(35))
+
         roomNumber = db.Column(db.String(5))
         priorityOfIssue = db.Column(db.Integer)
         reporter =  db.Column(db.String(50))
