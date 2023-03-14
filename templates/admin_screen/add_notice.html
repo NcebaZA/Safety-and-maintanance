@@ -14,7 +14,7 @@
             var maxLength = $(this).attr('maxlength');
             var currentLength = $(this).val().length;
             var remaining = maxLength - currentLength;
-            $('#counter').text(remaining );
+            $('#counter').text("Words Remaining: "+remaining);
         });
     });
 </script>
@@ -41,7 +41,7 @@
                 <textarea class="form-control" id="add_announcement" rows="4" name="announcement" maxlength="255"
                     required ></textarea>
 
-                <div id="counter" class="text-end">255</div>
+                <div id="counter" class="text-end">Words Remaining: 255</div>
 
                 <button type="submit" class="btn btn-primary mt-3 " id="button1">Post</button>
 
