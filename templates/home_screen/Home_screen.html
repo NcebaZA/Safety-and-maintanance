@@ -56,9 +56,15 @@
       <div class="logo">My Home Screen</div>
       <nav>
         <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="About.html">About</a></li>
-          <li><a href="login.htmlgit">Logout</a></li>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about-us">About</a></li>
+          {%if  current_user %}
+          <li><a href="/logout">Logout</a></li>
+
+          {% else %}
+
+          <li><a href="/login">Login</a></li>
+          {%endif%}
         </ul>
       </nav>
     </header>

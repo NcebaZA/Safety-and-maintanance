@@ -38,8 +38,13 @@ def user_loader(user_id):
 #HomePage route
 @app.route("/")
 def index():
-   
-    return "This the first page"
+    return render_template("/home_screen/Home_screen.html")
+
+#About us page route
+@app.route("/about-us")
+def about_us():
+
+     return render_template("/home_screen/About.html")
 
 
 #This shows the login page for now. No login functionality has been added

@@ -58,9 +58,16 @@
         <div class="logo">My Home Screen</div>
         <nav>
           <ul>
-            <li><a href="Home_screen.html">Home</a></li>
-            <li><a href="About.html">About</a></li>
-            <li><a href="login.html">Logout</a></li>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about-us">About</a></li>
+            {%if  flask_login.current_user.is_authenticated %}
+          <li><a href="/logout">Logout</a></li>
+
+          {% else %}
+
+          <li><a href="/login">Login</a></li>
+          {%endif%}
+          
           </ul>
         </nav>
     </div>
