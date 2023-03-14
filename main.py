@@ -2,14 +2,9 @@ from flask import Flask, flash, redirect, render_template, request, url_for, jso
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
-# testing by M Mngadi
-from random import randint
-from sqlalchemy.exc import IntegrityError
-# end testing
-
 app = Flask(__name__)
 
-#database config
+# database config
 database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
     dbuser="bgoscsfb",
     dbpass="xOIQsgnH2fM5hLsfmVLT_UZbrdlPkD78",
@@ -21,14 +16,14 @@ app.config['SECRET_KEY'] = "thisismyverysecretkey"
 db.init_app(app)
 
 
-#HomePage route
+# HomePage route
 @app.route("/")
 def index():
 
     return "This is the first page"
 
 
-#This shows the login page for now. No login functionality has been added
+# This shows the login page for now. No login functionality has been added
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -38,13 +33,13 @@ def login():
 
         print(f"email:{email}\npassword{password}")
 
-        #Check if user exists
+        # Check if user exists
         if user_query:
-            #if user exists check if password matches password in database
+            # if user exists check if password matches password in database
             if user_query.password == password:
                 return redirect(url_for('admin'))
 
-            #if password is incorrect then give error to user that password is incorrect
+            # if password is incorrect then give error to user that password is incorrect
             else:
                 flash('Incorrect password')
 
@@ -61,7 +56,7 @@ def admin():
     return "You have succesfully been logged in"
 
 
-##The function below is a test of adding a user to the database table
+# The function below is a test of adding a user to the database table
 @app.route("/create_user")
 def create_user():
     new_user = users(first_name="Nokthula",
@@ -79,7 +74,7 @@ def create_user():
 listUser = []
 
 
-#The function below is a test of gettinng all users from database table
+# The function below is a test of gettinng all users from database table
 @app.route("/get_users")
 def get_users():
     all_users = users.query.all()
@@ -90,79 +85,151 @@ def get_users():
     return f"These are users in the system {listUser}"
 
 
-#This function takes user to forgot passsword page. NB: not functionality has been added
+# This function takes user to forgot passsword page. NB: not functionality has been added
 @app.route("/forgot_password")
 def forgot_password():
     return render_template("forgot-password1.html")
 
 
-#This function takes user to issues table.
+# This function takes user to issues table.
 @app.route("/issues_table", methods=['GET', 'POST'])
 def show_issues():
-    global l
-    global filtered_data
-    
+    global gbl
+    gbl = {}
+
     def append_args(link, d):
         for param in d:
-            if d[param]!=['']:
+            if d[param] != ['']:
                 for arg in d[param]:
-                    if link[-1]=='?' or link[-1]=='&':
-                        l['cur_args'][param]=arg
-                        link+= f"{param}={arg}"
+                    if link[-1] == '?' or link[-1] == '&':
+                        gbl['cur_args'][param] = arg
+                        link += f"{param}={arg}"
                     else:
-                        link+=f"%2B{arg}"
-                link+="&"
+                        link += f"%2B{arg}"
+                link += "&"
         return link
+    
+    def format_args(args):
+        return args.split('+')
+        
+    def get_args_href(params):
+        result={}
+        for item in params:
+            temp = params[item].replace(' ','%20').replace('+','%2B')
+            result[item]=temp   
+        return result
 
-    page = request.args.get('page',1,type=int)
-    keyword = request.args.get('keyword','',type=str)
-    campus = request.args.get('campus','',type=str)
-    block = request.args.get('block','',type=str)
-    priority = request.args.get('priority','',type=str)
+    def get_all_issues(argsPar={}):
+        page = request.args.get('page',1,type=int)
+        keyword = request.args.get('keyword','',type=str)
+        campus = request.args.get('campus','',type=str)
+        block = request.args.get('block','',type=str)
+        priority = request.args.get('priority','',type=str)
+        
+        main = {'cur_args': argsPar , 'pages': {}}
+        
+        if argsPar=={}:
+            if keyword!='':
+                main['cur_args']['keyword']=format_args(keyword)
+                
+            if campus!='':
+                main['cur_args']['campus']=format_args(campus)
+            
+            if block!='':
+                main['cur_args']['block']=format_args(block)
+                
+            if priority!='':
+                main['cur_args']['priority']=format_args(priority)
+            
+            gbl['cur_args']=main['cur_args']
+        else:
+            gbl['cur_args']=argsPar
+            
+        filtered_data = None
+        sql_query = 'SELECT * FROM tdata_db'
 
+        if ('keyword' in main['cur_args'].keys()) or ('campus' in main['cur_args'].keys()) or ('block' in main['cur_args'].keys()) or ('priority' in main['cur_args'].keys()):
+            sql_query += ' WHERE'
+
+        if 'keyword' in main['cur_args'].keys():
+            if main['cur_args']['keyword'] != ['']:
+                sql_query += " ("
+                for param in main['cur_args']['keyword']:
+                    sql_query += f" title='{param}'"
+                    if param != main['cur_args']['keyword'][-1]:
+                        sql_query += ' OR'
+                sql_query += " )"
+
+        if 'campus' in main['cur_args'].keys():
+            if main['cur_args']['campus'] != ['']:
+                if (sql_query[-1] == ")"):
+                    sql_query += " AND"
+                sql_query += " ("
+                for param in main['cur_args']['campus']:
+                    sql_query += f" campus='{param}'"
+                    if param != main['cur_args']['campus'][-1]:
+                        sql_query += ' OR'
+                sql_query += " )"
+
+        if 'block' in main['cur_args'].keys():
+            if main['cur_args']['block'] != ['']:
+                if (sql_query[-1] == ")"):
+                    sql_query += " AND"
+                sql_query += " ("
+                for param in main['cur_args']['block']:
+                    sql_query += f" block='{param}'"
+                    if param != main['cur_args']['block'][-1]:
+                        sql_query += ' OR'
+                sql_query += " )"
+
+        if 'priority' in main['cur_args'].keys():
+            if main['cur_args']['priority'] != ['']:
+                if (sql_query[-1] == ")"):
+                    sql_query += " AND"
+                sql_query += " ("
+                for param in main['cur_args']['priority']:
+                    sql_query += f" priority='{param}'"
+                    if param != main['cur_args']['priority'][-1]:
+                        sql_query += ' OR'
+                sql_query += " )"
+
+        filtered_data = tdataDB.query.from_statement(db.text(sql_query))
+        
+        tdataDB_id = [item.id for item in filtered_data.all()]
+        main['pages'] = tdataDB.query.filter(tdataDB.id.in_(tuple(tdataDB_id))).paginate(page=page, per_page=4)
+        
+        return main
+    
     if request.method == 'GET':
-        l = {'cur_args': request.args.to_dict() , 'pages': {}}
-        print(l['cur_args'])
+        items_get = get_all_issues()
 
-        filtered_data = tdataDB.query
-
-        if keyword!='':
-            filtered_data = filtered_data.filter(tdataDB.title.ilike(f"{keyword}%"))
-        if campus!='':
-            filtered_data = filtered_data.filter(tdataDB.campus.ilike(f"{campus}%"))
-        if block!='':
-            filtered_data = filtered_data.filter(tdataDB.block.ilike(f"{block}%"))
-        if priority!='':
-            filtered_data = filtered_data.filter(tdataDB.priority.ilike(f"{priority}%"))
-
-        l['pages']=filtered_data.paginate(page=page,per_page=4)
-
-        return render_template("issues_table.html",
-                               pages=l['pages'],
-                               args=l['cur_args'])
+        return render_template("issues_table.html",pages=items_get['pages'],args=get_args_href(gbl['cur_args']))
 
     if request.method == 'POST':
         data = request.json
-
-        print(f"data json | {data}")
-
-        to_url = request.full_path
         
-        to_url = append_args(to_url,data)
-        print(f"after func | {to_url}")
-       
+        items_post = get_all_issues()
+                
+        combine_args = {**gbl['cur_args'],**data}
+        print(f"data json | {combine_args}")
+        
+        items_post = get_all_issues(combine_args)
+
+        to_url = append_args(request.full_path, combine_args)
+        print(f"to_url | {to_url}")
+
         # for when all param are removed
-        if to_url[-1]=="?":
+        if to_url[-1] == "?":
             to_url = './issues_table'
 
-        return jsonify({'status' : 'success', 'data' : {'redirect' : to_url}})
+        return jsonify({'status' : 'success', 'data': { 'items' : render_template('issue_card.html', pages=items_post['pages'], args=get_args_href(combine_args)), 'redirect': to_url}})
 
 
 # testing
 
 @app.route("/i_tdata")
 def i_tdata():
-    for i in range(0,25):
+    for i in range(0, 25):
         add_item(i)
     return "Completed!"
 
@@ -189,6 +256,7 @@ def remove_item(id):
     db.session.delete(item)
     db.session.commit()
 
+
 @app.route("/run_tables")
 def run_tables():
     with app.app_context():
@@ -208,10 +276,10 @@ def get_issues():
     return f"Issues = {tdata_local}"
 
 
-#admin page route
+# admin page route
 """You can add the admin page route here"""
 
-#Report page route
+# Report page route
 """Add report page route info here"""
 
 if __name__ == "__main__":

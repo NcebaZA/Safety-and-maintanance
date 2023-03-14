@@ -29,6 +29,8 @@
                     if (res.data.redirect) {
                         //window.location.href = res.data.redirect
                         window.history.pushState({}, "", res.data.redirect);
+                        $('#issue-items').html(res.data.items);
+                        console.log(res.data);
                     }
                 }
             });
@@ -46,7 +48,8 @@
                     if (res.data.redirect) {
                         //window.location.href = res.data.redirect
                         window.history.pushState({}, "", res.data.redirect);
-                        //$('#issue-items').html(res.data.items);
+                        $('#issue-items').html(res.data.items);
+                        console.log(res.data);
                     }
                 }
             });
