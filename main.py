@@ -1,4 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 import flask_login
@@ -23,10 +24,18 @@ app.config["SQLALCHEMY_DATABASE_URI"] =  "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thisismyverysecretkey"
 
+#initializing database to flask app
 db.init_app(app)
 
-#setting up login manager
+
+#The line of code below is for performing database migrations 
+migrate = Migrate(app, db)
+
+
+#setting up login manager which is used for user authentication
+
 login_manager.init_app(app)
+
 
 
 @login_manager.user_loader
@@ -96,7 +105,9 @@ def logout():
 def admin():
     if flask_login.current_user.user_role=='admin':
         users_count = users.query.count()
-        return render_template("/admin_screen/admin.html",users_count=users_count)
+        report_count = report.query.count()
+        notices_count = notice_board.query.count()
+        return render_template("/admin_screen/admin.html",users_count=users_count, report_count=report_count,notices_count=notices_count)
     else:
         
          return redirect(url_for("forbidden"))
@@ -104,10 +115,11 @@ def admin():
 @app.route("/admin/add_user", methods=["POST","GET"])
 @flask_login.login_required
 def add_user():
-     if flask_login.current_user.user_role=='admin'and request.method=="GET":
-        return render_template("/admin_screen/add_user.html")
+     if flask_login.current_user.user_role=='admin': 
+        if request.method=="GET":
+            return render_template("/admin_screen/add_user.html")
      #check if current logged in user has admin privilage and if so allow them to access the page
-     if flask_login.current_user.user_role=='admin' and request.method=="POST":
+        elif  request.method=="POST":
           user_name = request.form.get("user_name")
           name = request.form.get("name")
           surname = request.form.get("surname")
@@ -120,10 +132,8 @@ def add_user():
           
           #Check if user name or email has already been taken
           if users.query.filter_by(email=email).first() or users.query.filter_by(username=username).first():
-               
-
-               return flash("Username or email already in use")
-               
+              flash("Username or email already in use")
+              return render_template("/admin_screen/add_user.html")
           
           
           #if it has not been taken then create a new user
@@ -132,10 +142,73 @@ def add_user():
             db.session.add(new_user)
             db.session.commit()
             return redirect(url_for("admin"))
-     return flash("Error username or email already used")
+     else:
+         redirect(url_for("forbidden"))
 
+@app.route("/admin/users")
+@flask_login.login_required
+def show_users():
+    if flask_login.current_user.user_role=='admin': 
+        all_users = users.query.all()
+        return render_template("/admin_screen/users.html", all_users=all_users)
 
+#deleting users 
+"""This is an endpoint for deleting users which takes in a argument of 'id' to delete a user"""
+@app.route("/admin/users/delete")
+@flask_login.login_required
+def delete_user():
+    #if request arguments exist delete user
+    if request.args:
+         user_id = request.args.get('id')
+         print(user_id)
+        
+         user = users.query.filter_by(id=user_id).first()
+         if user:
+            db.session.delete(user)
+            db.session.commit()
+
+            return redirect(url_for("show_users"))
+         else:
+             flash("User does not exist")
+             return redirect(url_for("show_users"))
+         
+
+#route for posting notices     
+@app.route("/admin/notice", methods=["GET","POST"])
+def add_notice():
+    if flask_login.current_user.user_role=='admin':
+        if request.method=="POST":
+            user_id = flask_login.current_user.id
+            announcement = request.form.get("announcement")
+            new_notice = notice_board(announcements=announcement, user_id=user_id)
+            db.session.add(new_notice)
+            db.session.commit()
+            flash("You successfully added a new notice")
+
+            return redirect(url_for("add_notice"))
+
+        else:
+            return render_template("/admin_screen/add_notice.html")
+    else:
+        return "You do not have permission to access this page",403
     
+@app.route("/admin/notices")
+@flask_login.login_required
+def show_notices():
+    if flask_login.current_user.user_role=='admin': 
+        if request.args:
+            #delete notice here
+            notice_id= request.args.get("delete")
+            notice = notice_board.query.filter_by(id=notice_id).first()
+            db.session.delete(notice)
+            db.session.commit()
+
+            return redirect(url_for("show_notices"))
+            
+        else:
+            all_notices = notice_board.query.all()
+            return render_template("/admin_screen/notices.html", all_notices=all_notices)
+        
 
 
 @app.route("/forbidden")
@@ -173,7 +246,7 @@ def forgot_password():
 #This function takes user to issues table. NB: no functionality has been added
 @app.route("/issues_table")
 def show_issues_table():
-     return render_template("issues_table.html",tdata=tdata_local)
+     return render_template("issues_table.html")
 
 #sign up route
 @app.route("/sign_up", methods=["POST","GET"])

@@ -3,19 +3,21 @@
 {%block content%}
 {% set is_active2 = "active" %}
 {% include "/admin_screen/nav_bar.html" %}
-<div class=" container-md ">
+<div class=" container-md py-3">
     <div class=" vertical-center-row mx-auto py-auto px-auto card shadow-lg p-3  bg-body rounded  ">
         <div class="row  ">
 
             <div class="heading-container text-center">
                 <h1>Enter user details</h1>
-                <div>{% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                       {% for message in messages %}
-                          {{ message }}
-                       {% endfor %}
-                    {% endif %}
-                 {% endwith %}</div>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                  {% for message in messages %}
+                  <div class="alert alert-danger">{{ message }}</div>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
             </div>
             <form method="POST">
 
