@@ -6,26 +6,28 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        var filters = {};
         $('input[type="checkbox"]').on('change', function () {
-            var filters = {};
             $('input[type="checkbox"]:checked').each(function () {
                 var filterName = $(this).attr('name');
                 var filterValue = $(this).val();
                 if (filters[filterName]) {
-                    filters[filterName].push(filterValue);
+                    if(filters[filterName].indexOf(filterValue)==-1){
+                        filters[filterName].push(filterValue);
+                    }
                 } else {
                     filters[filterName] = [filterValue];
                 }
             });
+            
             $.ajax({
-                url: '/filter',
+                url: '/issues_table',
                 data: JSON.stringify(filters),
                 type: 'POST',
                 contentType: 'application/json;charset=UTF-8',
-                success: function (response) {
-                    console.log(response);
-                    $('#issue-items').html(response.data.items);
+                success: function (res) {
                     if (res.data.redirect) {
+                        //window.location.href = res.data.redirect
                         window.history.pushState({}, "", res.data.redirect);
                     }
                 }
@@ -34,15 +36,17 @@
 
         $('#search_text').keyup(function () {
             var search = $(this).val();
+            filters = Object.assign({},filters,{ 'keyword' : [search] });
             $.ajax({
                 url: "/issues_table",
                 method: "POST",
-                data: { search_for: search },
+                data: JSON.stringify(filters),
+                contentType: 'application/json;charset=UTF-8',
                 success: function (res) {
-                    $('#search_text').html(res.data.search_for)
-                    $('#issue-items').html(res.data.items)
                     if (res.data.redirect) {
+                        //window.location.href = res.data.redirect
                         window.history.pushState({}, "", res.data.redirect);
+                        //$('#issue-items').html(res.data.items);
                     }
                 }
             });

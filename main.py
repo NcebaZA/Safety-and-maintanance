@@ -99,88 +99,71 @@ def forgot_password():
 #This function takes user to issues table.
 @app.route("/issues_table", methods=['GET', 'POST'])
 def show_issues():
-    page = request.args.get('page', 1, type=int)
-    keyword = request.args.get('keyword', '', type=str)
-    campus = request.args.get('campus', '', type=str)
-
     global l
+    global filtered_data
+    
+    def append_args(link, d):
+        for param in d:
+            if d[param]!=['']:
+                for arg in d[param]:
+                    if link[-1]=='?' or link[-1]=='&':
+                        l['cur_args'][param]=arg
+                        link+= f"{param}={arg}"
+                    else:
+                        link+=f"%2B{arg}"
+                link+="&"
+        return link
+
+    page = request.args.get('page',1,type=int)
+    keyword = request.args.get('keyword','',type=str)
+    campus = request.args.get('campus','',type=str)
+    block = request.args.get('block','',type=str)
+    priority = request.args.get('priority','',type=str)
 
     if request.method == 'GET':
         l = {'cur_args': request.args.to_dict() , 'pages': {}}
-        print(f"Inside GET | {l['cur_args']}" )
+        print(l['cur_args'])
 
-        l['pages'] = tdataDB.query
-        
+        filtered_data = tdataDB.query
+
         if keyword!='':
-            l['pages'] = l['pages'].filter(tdataDB.title.like(f'{keyword}%'))
-        elif campus!='':
-            l['pages'] = l['pages'].filter_by(campus=(f'{campus}'))
+            filtered_data = filtered_data.filter(tdataDB.title.ilike(f"{keyword}%"))
+        if campus!='':
+            filtered_data = filtered_data.filter(tdataDB.campus.ilike(f"{campus}%"))
+        if block!='':
+            filtered_data = filtered_data.filter(tdataDB.block.ilike(f"{block}%"))
+        if priority!='':
+            filtered_data = filtered_data.filter(tdataDB.priority.ilike(f"{priority}%"))
 
-        l['pages'] = l['pages'].paginate(page=page,per_page=4)
+        l['pages']=filtered_data.paginate(page=page,per_page=4)
 
         return render_template("issues_table.html",
                                pages=l['pages'],
                                args=l['cur_args'])
 
     if request.method == 'POST':
-        search_for = request.form['search_for']
+        data = request.json
 
-        l = {'cur_args': request.args.to_dict() , 'pages': {}}
-        print(f"Inside POST | {l['cur_args']}")
-
-        l['pages']=tdataDB.query.filter(tdataDB.title.like(f'{search_for}%')).paginate(page=1,per_page=4)
+        print(f"data json | {data}")
 
         to_url = request.full_path
-        if to_url[-1]=='?':
-            to_url += f"keyword={search_for}"
-            l['cur_args']['keyword']=search_for
-        else:
-            to_url = request.path
+        
+        to_url = append_args(to_url,data)
+        print(f"after func | {to_url}")
+       
+        # for when all param are removed
+        if to_url[-1]=="?":
+            to_url = './issues_table'
 
-        return jsonify({'status' : 'success', 'data' : {'items':render_template('issue_card.html',pages=l['pages'], args=l['cur_args']), 'search_for' : search_for, 'redirect' : to_url}})
+        return jsonify({'status' : 'success', 'data' : {'redirect' : to_url}})
 
 
 # testing
-@app.route('/filter', methods=['POST'])
-def filter_data():
-    data = request.json
-    # Filter the data based on the selected filters
-    # ...
-    print(f"data from json | {data}")
-    l = {
-        'cur_args': request.args.to_dict(),
-        'pages': tdataDB.query.paginate(page=1, per_page=4)
-    }
-
-    l['pages'] = tdataDB.query.filter_by(campus=data['uCampus'][0]).paginate(
-        page=1, per_page=4)
-
-    # %2B
-    to_url = request.full_path
-    if to_url[-1]=='?':
-        if data['uCampus'] != []:
-            to_url += f"campus="
-            for uitem in data['uCampus']:
-                "{data['uCampus']}"
-        #l['cur_args']['campus']=campus
-    else:
-        to_url = request.path
-
-    response = {
-        'status': 'success',
-        'data': {
-            'items':
-            render_template('issue_card.html',
-                            pages=l['pages'],
-                            args=l['cur_args']),
-            'redirect' : "./issues_table"
-        }
-    }
-    return jsonify(response)
-
 
 @app.route("/i_tdata")
 def i_tdata():
+    for i in range(0,25):
+        add_item(i)
     return "Completed!"
 
 
@@ -205,6 +188,13 @@ def remove_item(id):
     item = db.db.get_or_404(tdataDB, id)
     db.session.delete(item)
     db.session.commit()
+
+@app.route("/run_tables")
+def run_tables():
+    with app.app_context():
+        db.create_all()
+
+    return "Done~!"
 
 
 @app.route("/get_issues")

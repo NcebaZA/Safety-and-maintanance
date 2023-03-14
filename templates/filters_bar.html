@@ -23,20 +23,23 @@
                         <ul class="dropdown-menu p-3 rounded-0">
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uCampus"
-                                        value="Steve Biko">
+                                    <input class="form-check-input" type="checkbox" name="campus"
+                                        value="Steve Biko" {% if args['campus']=='Steve Biko'
+                                        %}checked{% endif %}>
                                     <span class="form-check-label">Steve Biko</span>
                                 </label>
                             </li>
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uCampus" value="Ritson">
+                                    <input class="form-check-input" type="checkbox" name="campus" value="Ritson" {% if args['campus']=='Ritson'
+                                    %}checked{% endif %}>
                                     <span class="form-check-label">Ritson</span>
                                 </label>
                             </li>
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uCampus" value="ML Sultan">
+                                    <input class="form-check-input" type="checkbox" name="campus" value="ML Sultan" {% if args['campus']=='ML Sultan'
+                                    %}checked{% endif %}>
                                     <span class="form-check-label">ML Sultan</span>
                                 </label>
                             </li>
@@ -50,19 +53,22 @@
                         <ul class="dropdown-menu p-3 rounded-0">
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uBlock" value="A Block">
+                                    <input class="form-check-input" type="checkbox" name="block" value="A Block" {% if args['block']=='A Block'
+                                    %}checked{% endif %}>
                                     <span class="form-check-label">A Block</span>
                                 </label>
                             </li>
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uBlock" value="B Block">
+                                    <input class="form-check-input" type="checkbox" name="block" value="B Block" {% if args['block']=='B Block'
+                                    %}checked{% endif %}>
                                     <span class="form-check-label">B Block</span>
                                 </label>
                             </li>
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uBlock" value="C Block">
+                                    <input class="form-check-input" type="checkbox" name="block" value="C Block" {% if args['block']=='C Block'
+                                    %}checked{% endif %}>
                                     <span class="form-check-label">C Block</span>
                                 </label>
                             </li>
@@ -76,19 +82,22 @@
                         <ul class="dropdown-menu p-3 rounded-0">
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uPriority" value="low">
+                                    <input class="form-check-input" type="checkbox" name="priority" value="low" {% if args['priority']=='low'
+                                    %}checked{% endif %}>
                                     <span class="form-check-label">Low</span>
                                 </label>
                             </li>
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uPriority" value="mid">
+                                    <input class="form-check-input" type="checkbox" name="priority" value="mid" {% if args['priority']=='mid'
+                                    %}checked{% endif %}>
                                     <span class="form-check-label">Mid</span>
                                 </label>
                             </li>
                             <li>
                                 <label class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="uPriority" value="high">
+                                    <input class="form-check-input" type="checkbox" name="priority" value="high" {% if args['priority']=='high'
+                                    %}checked{% endif %}>
                                     <span class="form-check-label">High</span>
                                 </label>
                             </li>
