@@ -170,7 +170,42 @@ def forgot_password():
 def show_issues_table():
      return render_template("issues_table.html",tdata=tdata_local)
 
+#sign up route
+@app.route("/sign_up", methods=["POST","GET"])
+def sign_up():
 
+     if request.method == "POST":
+          first_name =  request.form.get("first_name")
+          surname = request.form.get("surname")
+          username = request.form.get("username")
+          email = request.form.get("email")
+          password = request.form.get("password")
+          confirm_password = request.form.get("confirm-password")
+          print(first_name, surname, username, email, password, confirm_password)
+      
+      # process the sign-up data here
+          #Check if user name or email has already been taken
+          if users.query.filter_by(email=email).first() or users.query.filter_by(username=username).first():
+               flash("Username or email already in use")
+               return redirect(url_for("sign_up"))
+               
+          
+          
+          #if it has not been taken then create a new user
+          else:
+               new_user = users(first_name=first_name, surname=surname, email=email,password=password, username = username, user_role = "user")
+               db.session.add(new_user)
+               db.session.commit()
+               return redirect(url_for("login"))
+     else:
+        # render the sign-up form here
+         return render_template("/admin_screen/sign_up.html")
+
+         
+     
+
+     
+    
 
 
 #admin page route
