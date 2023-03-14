@@ -158,9 +158,23 @@ def delete_user():
          
 
 #route for posting notices     
-@app.route("/admin/users/notice", methods=["GET","POST"])
+@app.route("/admin/notice", methods=["GET","POST"])
 def add_notice():
-    return render_template("/admin_screen/add_notice.html")
+    if flask_login.current_user.user_role=='admin':
+        if request.method=="POST":
+            user_id = flask_login.current_user.id
+            announcement = request.form.get("announcement")
+            new_notice = notice_board(announcements=announcement, user_id=user_id)
+            db.session.add(new_notice)
+            db.session.commit()
+            flash("You successfully added a new notice")
+
+            return redirect(url_for("add_notice"))
+
+        else:
+            return render_template("/admin_screen/add_notice.html")
+    else:
+        return "You do not have permission to access this page",403
 
 @app.route("/forbidden")
 def forbidden():
