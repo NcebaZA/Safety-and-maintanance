@@ -3,6 +3,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 import flask_login
+from flask_login import current_user
 
 # testing by M Mngadi
 from random import randint
@@ -77,7 +78,10 @@ def login():
                 next_page = request.args.get('next')
                 
                 flask_login.login_user(user_query)
-                return redirect(next_page or url_for('admin'))
+                if flask_login.current_user.user_role=='admin':
+                    return redirect(next_page or url_for('admin'))
+                else:
+                    return redirect(next_page or url_for("index"))
            
            #if password is incorrect then give error to user that password is incorrect
 
@@ -277,7 +281,7 @@ def sign_up():
                return redirect(url_for("login"))
      else:
         # render the sign-up form here
-         return render_template("/admin_screen/sign_up.html")
+         return render_template("/sign_up.html")
 
          
      

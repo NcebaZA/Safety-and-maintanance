@@ -1,76 +1,75 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Home Screen</title>
-    <style>
-      /* add some basic styling */
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f7f7f7;
-        color: #333;
-      }
 
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #2a9dc7;
-        color: #fff;
-        padding: 20px;
-      }
+{%extends "base.html"%}
+{% block head%}<style>
+  /* add some basic styling */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+  }
 
-      .logo {
-        font-size: 24px;
-        font-weight: bold;
-      }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2a9dc7;
+    color: #fff;
+    padding: 20px;
+  }
 
-      nav {
-        display: flex;
-      }
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+  }
 
-      nav ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-      }
+  nav {
+    display: flex;
+  }
 
-      nav li {
-        margin: 0 10px;
-      }
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
 
-      nav a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 18px;
-        font-weight: bold;
-      }
+  nav li {
+    margin: 0 10px;
+  }
 
-      nav a:hover {
-        text-decoration: underline;
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="logo">My Home Screen</div>
-      <nav>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/about-us">About</a></li>
-          {%if  current_user %}
-          <li><a href="/logout">Logout</a></li>
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+  }
 
-          {% else %}
+  nav a:hover {
+    text-decoration: underline;
+  }
+</style> {%endblock%} 
+{%block title%} Home {%endblock%}
+{%block content%}
+<body>
+  <header>
+    <div class="logo">DUT Maintance</div>
+    <nav>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/about-us">About</a></li>
+        {%if  current_user.is_authenticated %}
+        <li><a href="/logout">Logout</a></li>
 
-          <li><a href="/login">Login</a></li>
-          {%endif%}
-        </ul>
-      </nav>
-    </header>
-    <h1>Welcome to DUT's Safety and Maintenance Home Screen</h1>
-    <div class="dashboard">
-      <!-- dashboard widgets go here -->
-    </div>
-  </body>
-</html>
+        {% else %}
+
+        <li><a href="/login">Login</a></li>
+        {%endif%}
+      </ul>
+    </nav>
+  </header>
+  <h1>Welcome to DUT's Safety and Maintenance Home Screen</h1>
+  <div class="dashboard">
+    <!-- dashboard widgets go here -->
+  </div>
+</body>
+{%endblock%}
