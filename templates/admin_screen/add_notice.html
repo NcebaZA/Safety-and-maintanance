@@ -1,0 +1,53 @@
+<!-- This is a form for adding new notices to the system -->
+{%extends "base.html"%}
+{%block head%}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{%endblock%}
+{% block title %}New notice{% endblock %}
+{% block content %}
+<!-- Adding navigation bar and setting the Add notice title to active -->
+{%set is_active4="active"%}
+{% include "/admin_screen/nav_bar.html" %}
+<script>
+    $(document).ready(function () {
+        $('#add_announcement').on('input', function () {
+            var maxLength = $(this).attr('maxlength');
+            var currentLength = $(this).val().length;
+            var remaining = maxLength - currentLength;
+            $('#counter').text("Words Remaining: "+remaining);
+        });
+    });
+</script>
+<div class=" container-md py-5 ">
+    <div class=" vertical-center-row mx-auto py-auto px-auto card shadow-lg p-3  bg-body rounded  ">
+        <div class="row  ">
+
+            <div class="heading-container text-center">
+                <h1>Add new notice</h1>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+            </div>
+            <form method="POST">
+
+                <label for="name" class="label">Announcement</label>
+
+                <textarea class="form-control" id="add_announcement" rows="4" name="announcement" maxlength="255"
+                    required ></textarea>
+
+                <div id="counter" class="text-end">Words Remaining: 255</div>
+
+                <button type="submit" class="btn btn-primary mt-3 " id="button1">Post</button>
+
+            </form>
+
+
+
+
+            {% endblock %}
