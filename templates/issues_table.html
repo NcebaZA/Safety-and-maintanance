@@ -5,8 +5,10 @@
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 <script type="text/javascript">
+    const mergeObjects = (first, second) => ({...first, ...second});
+    const filters = {};
+
     $(document).ready(function () {
-        var filters = {};
         $('input[type="checkbox"]').on('change', function () {
             $('input[type="checkbox"]:checked').each(function () {
                 var filterName = $(this).attr('name');
@@ -30,7 +32,6 @@
                         //window.location.href = res.data.redirect
                         window.history.pushState({}, "", res.data.redirect);
                         $('#issue-items').html(res.data.items);
-                        console.log(res.data);
                     }
                 }
             });
@@ -38,7 +39,24 @@
 
         $('#search_text').keyup(function () {
             var search = $(this).val();
-            filters = Object.assign({},filters,{ 'keyword' : [search] });
+            
+            $('input[type="checkbox"]:checked').each(function () {
+                var filterName = $(this).attr('name');
+                var filterValue = $(this).val();
+                if (filters[filterName]) {
+                    if(filters[filterName].indexOf(filterValue)==-1){
+                        filters[filterName].push(filterValue);
+                    }
+                } else {
+                    filters[filterName] = [filterValue];
+                }
+            });
+
+            if (search!='') {
+                filters['keyword'] = [search];
+            }else{
+                delete filters.keyword
+            }
             $.ajax({
                 url: "/issues_table",
                 method: "POST",
@@ -49,7 +67,6 @@
                         //window.location.href = res.data.redirect
                         window.history.pushState({}, "", res.data.redirect);
                         $('#issue-items').html(res.data.items);
-                        console.log(res.data);
                     }
                 }
             });

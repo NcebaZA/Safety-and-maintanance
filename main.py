@@ -99,65 +99,68 @@ def show_issues():
 
     def append_args(link, d):
         for param in d:
-            if d[param] != ['']:
-                for arg in d[param]:
-                    if link[-1] == '?' or link[-1] == '&':
-                        gbl['cur_args'][param] = arg
-                        link += f"{param}={arg}"
-                    else:
-                        link += f"%2B{arg}"
+            link += f"{param}={d[param]}"
+            if list(d.keys())[-1]!=param:
                 link += "&"
         return link
-    
+
     def format_args(args):
         return args.split('+')
-        
+
     def get_args_href(params):
-        result={}
+        result = {}
         for item in params:
-            temp = params[item].replace(' ','%20').replace('+','%2B')
-            result[item]=temp   
+            t_args = params[item]
+            arg_string = ''
+            for obj in t_args:
+                if t_args[-1]==obj:
+                    arg_string+=obj
+                else:
+                    arg_string+=obj+'+'
+            arg_string = arg_string.replace(' ', '%20').replace('+', '%2B')
+            result[item]=arg_string
         return result
 
     def get_all_issues(argsPar={}):
-        page = request.args.get('page',1,type=int)
-        keyword = request.args.get('keyword','',type=str)
-        campus = request.args.get('campus','',type=str)
-        block = request.args.get('block','',type=str)
-        priority = request.args.get('priority','',type=str)
-        
-        main = {'cur_args': argsPar , 'pages': {}}
-        
-        if argsPar=={}:
-            if keyword!='':
-                main['cur_args']['keyword']=format_args(keyword)
-                
-            if campus!='':
-                main['cur_args']['campus']=format_args(campus)
-            
-            if block!='':
-                main['cur_args']['block']=format_args(block)
-                
-            if priority!='':
-                main['cur_args']['priority']=format_args(priority)
-            
-            gbl['cur_args']=main['cur_args']
+        page = request.args.get('page', 1, type=int)
+        keyword = request.args.get('keyword', '', type=str)
+        campus = request.args.get('campus', '', type=str)
+        block = request.args.get('block', '', type=str)
+        priority = request.args.get('priority', '', type=str)
+
+        main = {'cur_args': argsPar, 'pages': {}}
+
+        if argsPar == {}:
+            if keyword != '':
+                main['cur_args']['keyword'] = format_args(keyword)
+
+            if campus != '':
+                main['cur_args']['campus'] = format_args(campus)
+
+            if block != '':
+                main['cur_args']['block'] = format_args(block)
+
+            if priority != '':
+                main['cur_args']['priority'] = format_args(priority)
+
+            gbl['cur_args'] = main['cur_args']
         else:
-            gbl['cur_args']=argsPar
-            
+            gbl['cur_args'] = argsPar
+
         filtered_data = None
         sql_query = 'SELECT * FROM tdata_db'
 
-        if ('keyword' in main['cur_args'].keys()) or ('campus' in main['cur_args'].keys()) or ('block' in main['cur_args'].keys()) or ('priority' in main['cur_args'].keys()):
+        if ('keyword' in main['cur_args'].keys()) or (
+                'campus' in main['cur_args'].keys()) or (
+                    'block' in main['cur_args'].keys()) or (
+                        'priority' in main['cur_args'].keys()):
             sql_query += ' WHERE'
 
         if 'keyword' in main['cur_args'].keys():
             if main['cur_args']['keyword'] != ['']:
                 sql_query += " ("
                 for param in main['cur_args']['keyword']:
-                    sql_query += f" title='{param}'"
-                    if param != main['cur_args']['keyword'][-1]:
-                        sql_query += ' OR'
+                    sql_query += f" title LIKE '{param}%'"
                 sql_query += " )"
 
         if 'campus' in main['cur_args'].keys():
@@ -194,87 +197,47 @@ def show_issues():
                 sql_query += " )"
 
         filtered_data = tdataDB.query.from_statement(db.text(sql_query))
-        
+
         tdataDB_id = [item.id for item in filtered_data.all()]
-        main['pages'] = tdataDB.query.filter(tdataDB.id.in_(tuple(tdataDB_id))).paginate(page=page, per_page=4)
-        
+        main['pages'] = tdataDB.query.filter(tdataDB.id.in_(
+            tuple(tdataDB_id))).paginate(page=page, per_page=4)
+
         return main
-    
+
     if request.method == 'GET':
         items_get = get_all_issues()
 
-        return render_template("issues_table.html",pages=items_get['pages'],args=get_args_href(gbl['cur_args']))
+        return render_template("issues_table.html",
+                               pages=items_get['pages'],
+                               args=get_args_href(gbl['cur_args']))
 
     if request.method == 'POST':
         data = request.json
-        
+
         items_post = get_all_issues()
-                
-        combine_args = {**gbl['cur_args'],**data}
-        print(f"data json | {combine_args}")
-        
+
+        combine_args = {**gbl['cur_args'], **data}
+        print(f"combine_args  | {combine_args}")
+
         items_post = get_all_issues(combine_args)
 
-        to_url = append_args(request.full_path, combine_args)
+        print(get_args_href(combine_args))
+
+        to_url = append_args(request.full_path, get_args_href(combine_args))
         print(f"to_url | {to_url}")
 
         # for when all param are removed
         if to_url[-1] == "?":
             to_url = './issues_table'
 
-        return jsonify({'status' : 'success', 'data': { 'items' : render_template('issue_card.html', pages=items_post['pages'], args=get_args_href(combine_args)), 'redirect': to_url}})
-
-
-# testing
-
-@app.route("/i_tdata")
-def i_tdata():
-    for i in range(0, 25):
-        add_item(i)
-    return "Completed!"
-
-
-def add_item(idPar):
-    tcamp = ["Steve Biko", "Ritson", "ML Sultan"]
-    tpriority = ["low", "mid", "high"]
-
-    new_issue = tdataDB(id=idPar,
-                        title=str(idPar),
-                        block=chr(randint(65, 90)) + " block",
-                        campus=tcamp[randint(0, 2)],
-                        priority=tpriority[randint(0, 2)])
-    db.session.add(new_issue)
-
-    try:
-        db.session.commit()
-    except IntegrityError:
-        db.session.rollback()
-
-
-def remove_item(id):
-    item = db.db.get_or_404(tdataDB, id)
-    db.session.delete(item)
-    db.session.commit()
-
-
-@app.route("/run_tables")
-def run_tables():
-    with app.app_context():
-        db.create_all()
-
-    return "Done~!"
-
-
-@app.route("/get_issues")
-def get_issues():
-
-    tdata_local = []
-    all_issues = tdataDB.query.all()
-    for item in all_issues:
-        tdata_local.append(item.title)
-
-    return f"Issues = {tdata_local}"
-
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'items':
+                render_template('issue_card.html',pages=items_post['pages'],args=get_args_href(combine_args)),
+                'redirect': to_url
+            }
+        })
 
 # admin page route
 """You can add the admin page route here"""
