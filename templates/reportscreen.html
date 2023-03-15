@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    <form method="POST">
+        <div class="w-25 p-3">
+            <label for="exampleInputEmail1" class="fw-semibold">Type of issue</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="type_of_issue">
+            <div id="emailHelp" class="form-text"></div>
+        </div>
+        <div class="w-25 p-3">
+            <label for="exampleInputPassword1" class="fw-semibold">Campus</label>
+            <select class="form-select" aria-label="Default select example" name="campus">
+                <option selected>Select Campus</option>
+                <option value="Steve Biko">Steve Biko</option>
+                <option value="Ritson">Ritson</option>
+                <option value="ML Sultan">ML Sultan</option>
+                <option value="City Campus">City Campus</option>
+                <option value="Briekfield">Briekfield</option>
+              </select>
+            
+        </div>
+        <div class="w-25 p-3">
+            <label for="exampleInputEmail1" class="fw-semibold">Originator</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="originator">
+            <div id="emailHelp" class="form-text"></div>
+        </div>
+        <div class="w-25 p-3">
+            <label for="exampleInputEmail1" class="fw-semibold">Contact Details</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="contact_details">
+            <div id="emailHelp" class="form-text"></div>
+        </div>
+        <div class="w-25 p-3">
+            <label for="exampleInputEmail1" class="fw-semibold">Department</label>
+            <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="department">
+            <div id="emailHelp" class="form-text"></div>     
+        </div>
+            <div class="w-25 p-3">
+                <label for="exampleInputEmail1" class="fw-semibold">Time Reported</label>
+                <input type="time" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="time_reported">
+                <div id="emailHelp" class="form-text"></div>  
+        </div>
+        <div class="w-25 p-3">
+            <label for="exampleInputEmail1" class="fw-semibold">Date Reported</label>
+            <input type="date" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="date_reported">
+            <div id="emailHelp" class="form-text"></div> 
+            </div> 
+            <div class="w-25 p-3">
+                <label for="exampleInputPassword1" class="fw-semibold">Nature of work</label>
+                <select class="form-select" aria-label="Default select example" name="nature_of_work">
+                    <option selected>Select nature of work</option>
+                    <option value="Electrian">Electrician</option>
+                    <option value="Plumbing">Plumbing</option>
+                    <option value="Moving Furniture">Moving Furniture</option>
+                    <option value="Painter">Painter</option>
+                    <option value="Building">Building</option>
+                  </select>   
+            </div> 
+            <div class="w-25 p-3">
+                <label for="exampleInputPassword1" class="fw-semibold">Priority of Work</label>
+                <select class="form-select" aria-label="Default select example" name="priority_of_work">
+                    <option selected>Select Priority of Work</option>
+                    <option value="High Priority">High</option>
+                    <option value="Medium Priority">Medium</option>
+                    <option value="Low Priority">Low</option>
+                  </select>   
+            </div>   
+            <div>
+                <label for="document" class="fw-semibold">Choose File</label>
+                <input type="file" name="choose_file">
+            </div>
+            <div>
+                <textarea name="comment" id="" cols="30" rows="10" placeholder="type your comment..."></textarea>
+            </div>
+        <button type="submit" class="fw-semibold">Submit</button>
+    </form>
+</div>
+{% endblock%}

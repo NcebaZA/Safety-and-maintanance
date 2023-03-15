@@ -252,6 +252,24 @@ def show_issues_table():
 #Report page route
 """Add report page route info here"""
 
+reports=[]
+@app.route("/add_report", methods=["GET","POST"])
+def add_report():
+
+    if request.method=="POST":
+        type_of_issue = request.form.get("type_of_issue")
+        campus =  request.form.get("campus")
+        originator = request.form.get("originator")
+        contact_details = request.form.get("contact_details")
+        department = request.form.get("department")
+        time_reported = request.form.get("time_reported")
+        date_reported = request.form.get("date_reported")
+        nature_of_work = request.form.get("nature_of_work")
+        choose_file = request.form.get("choose_file")
+        priority_of_work = request.form.get("priority_of_work")
+        print(f"Type of issue:{type_of_issue}\nCampus {campus}\nOriginator {originator}\nContact Details{contact_details}\nDepartment{department}\nTime Reported{time_reported}\nDate Reported{date_reported}\nNature of work{nature_of_work}\nPriority of Work{priority_of_work}\nChoose File{choose_file}")
+        #Connect to database
+    return render_template("reportscreen.html")
 
 if __name__ == "__main__":
     
