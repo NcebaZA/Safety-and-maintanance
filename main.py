@@ -200,14 +200,14 @@ def show_issues():
 
         tdataDB_id = [item.id for item in filtered_data.all()]
         main['pages'] = tdataDB.query.filter(tdataDB.id.in_(
-            tuple(tdataDB_id))).paginate(page=page, per_page=4)
+            tuple(tdataDB_id))).paginate(page=page, per_page=12)
 
         return main
 
     if request.method == 'GET':
         items_get = get_all_issues()
 
-        return render_template("issues_table.html",
+        return render_template("view_issues.html",
                                pages=items_get['pages'],
                                args=get_args_href(gbl['cur_args']))
 

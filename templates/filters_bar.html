@@ -5,7 +5,7 @@
             <div class="d-flex inline align-items-center">
                 <span class="material-symbols-outlined">filter_list</span>
                 &nbsp;
-                <span class="fw-light">Filter</span>
+                <span class="fw-normal">filter</span>
             </div>
         </button>
         <div class="offcanvas offcanvas-end" id="offcanvasNavbar">
@@ -113,7 +113,7 @@
                 <span class="material-symbols-outlined">search</span>
             </button>
             <input class="form-control" type="text" id="search_text" style="border: none;" {% if args['keyword']
-                %}value="{{ args['keyword'] }}" {% endif %} name="search_text" placeholder="Search by ref #"
+                %}value="{{ args['keyword'] }}" {% endif %} name="search_text" placeholder="search by ref #"
                 aria-label="Search">
         </div>
     </div>
