@@ -87,120 +87,30 @@
                     <div class="d-sm-flex align-items-center justify-content-between mb-4">
                         <h1 class="h3 mb-0 text-gray-800">Noticeboard</h1>
                     </div>
-
                     <div class="row">
-
-                    
-
-
-                    <div class="row">
-
+                        {%for r in tdata%}
                         <div class="col-lg-6">
                             <!-- Collapsable Card Example -->
                             <div class="card shadow mb-4">
                                 <!-- Card Header - Accordion -->
                                 <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
                                     role="button" aria-expanded="true" aria-controls="collapseCardExample">
-                                    <h6 class="m-0 font-weight-bold text-primary">Pipes leakage #64553</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Pipes leakage #{{r.referenceNo}}</h6>
                                 </a>
                                 <!-- Card Content - Collapse -->
                                 <div class="collapse show" id="collapseCardExample">
                                     <div class="card-body">
-                                        <strong>Location : </strong> Stive Biko &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong>Priority : </strong>high
+                                        <strong>Location : </strong> {{r.campus }}&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong>Priority : </strong>{{r.priorityOfIssue}}
                                         <br>
-                                        <strong>Status : </strong> Fixed 
+                                        <strong>Status : </strong> {{r.issueStatus}} 
                                         <br><br>
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
+                                    {{r.description}}
                                        
                                     </div>
                                 </div>
                             </div>
-
-                            
-
-                            <!-- Collapsable Card Example -->
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Accordion -->
-                                <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
-                                    role="button" aria-expanded="true" aria-controls="collapseCardExample">
-                                    <h6 class="m-0 font-weight-bold text-primary">Fire Hydrant</h6>
-                                    
-                                </a>
-                                <!-- Card Content - Collapse -->
-                                <div class="collapse show" id="collapseCardExample">
-                                    <div class="card-body">
-                                        <strong>Location : </strong> ML Sultan &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong>Priority : </strong>high
-                                        <br>
-                                        <strong>Status : </strong> Fixed 
-                                        <br><br>
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
-
-                        <div class="col-lg-6">
-                            
-                            <!-- Collapsable Card Example -->
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Accordion -->
-                                <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
-                                    role="button" aria-expanded="true" aria-controls="collapseCardExample">
-                                    <h6 class="m-0 font-weight-bold text-primary">Transfomer busted</h6>
-                                </a>
-                                <!-- Card Content - Collapse -->
-                                <div class="collapse show" id="collapseCardExample">
-                                    <div class="card-body">
-                                        <strong>Location : </strong> Ritson &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong>Priority : </strong>high
-                                        <br>
-                                        <strong>Status : </strong> unattended 
-                                        <br><br>
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                    </div>
-                                </div>
-                            </div>
-                          
-
-                            <!-- Collapsable Card Example -->
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Accordion -->
-                                <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse"
-                                    role="button" aria-expanded="true" aria-controls="collapseCardExample">
-                                    <h6 class="m-0 font-weight-bold text-primary">Projector not working</h6>
-                                </a>
-                                <!-- Card Content - Collapse -->
-                                <div class="collapse show" id="collapseCardExample">
-                                    <div class="card-body">
-                                        <strong>Location : </strong> Stive Biko &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <strong>Priority : </strong>medium
-                                        <br>
-                                        <strong>Status : </strong> Fixed 
-                                        <br>
-                                        <br>
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                        Sanele Nyaba, murphy flophy thing, with wild mood.
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
+                        {% endfor %}
                     </div>
 
                 </div>

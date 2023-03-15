@@ -22,11 +22,23 @@ app.config['SECRET_KEY'] = "thisismyverysecretkey"
 db.init_app(app)
 
 
-
+listIssues=[]
 #HomePage route
 @app.route("/")
 def index():
-    return render_template("cards.html")
+    reported_issues = report.query.all()
+    for r in reported_issues:
+          listIssues.append({"referenceNo": r.referenceNo, 
+                                 "campus": r.campus, 
+                                 "campusBlock": r.campusBlock, 
+                                 "department": r.department,
+                                 "roomNumber": r.roomNumber,
+                                 "priorityOfIssue": r.priorityOfIssue,
+                                 "reporter": r.reporter,
+                                 "dateReported": r.dateReported,
+                                 "issueStatus": r.issueStatus,
+                                 "description": r.description})
+    return render_template("cards.html", tdata = reported_issues)
 
 
 #This shows the login page for now. No login functionality has been added
@@ -97,7 +109,7 @@ listIssues=[]
 def show_issues():
      reported_issues = report.query.all()
      for r in reported_issues:
-          listIssues.append({"referenceNo": r.referenceNo, 
+          listIssues.append({"id": r.id,"referenceNo": r.referenceNo, 
                                  "campus": r.campus, 
                                  "campusBlock": r.campusBlock, 
                                  "department": r.department,
@@ -106,7 +118,19 @@ def show_issues():
                                  "reporter": r.reporter,
                                  "dateReported": r.dateReported,
                                  "issueStatus": r.issueStatus})
-     return render_template("tables.html", tdata = reported_issues)
+     return render_template("tables.html", tdata = reported_issues, deleteF = delete)
+
+@app.route("/issues/<int:id>/delete", methods=["GET", "POST"])
+def delete(id):
+    print("Start deleting report")
+    reportd = db.get_or_404(report, id)
+
+    if request.method == "POST":
+        db.session.delete(reportd)
+        db.session.commit()
+        return redirect(url_for("issues_table.html"))
+
+    return render_template("issues_table.html", foo=delete)
 
 #This function takes user to issues table. NB: no functionality has been added
 @app.route("/issues_table")

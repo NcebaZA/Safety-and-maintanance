@@ -59,6 +59,7 @@ class report(db.Model):
         issueStatus = db.Column(db.String(20))
         reporterRole = db.Column(db.String(20))
         upvoteCount = db.Column(db.Integer)
+        description = db.Column(db.String(255))
     
         #relationships here
         user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'))
