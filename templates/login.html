@@ -21,12 +21,16 @@
       {% if messages %}
       <ul class=flashes>
         {% for message in messages %}
-        <div class="alert alert-danger">{{ message }}</div>
+        
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
         {% endfor %}
       </ul>
       {% endif %}
       {% endwith %}
-      
+
 
       <form class="mt-2" method="POST">
         <div class="form-group">
@@ -40,6 +44,7 @@
               name="password">
           </div>
           <div class="mx-10 mt-2 mb-2"><a href="/forgot_password">Forgot Password?</a></div>
+          <div class="mx-10 mt-2 mb-2"><a href="/sign_up">Don't have an account? <div>Sign up</div></a></div>
           <div id="submit_div" style="text-align:center" class="mt-1">
             <button type="submit" class=" mt-2 btn btn-primary ">Login</button>
           </div>

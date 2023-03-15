@@ -86,7 +86,7 @@ def login():
            #if password is incorrect then give error to user that password is incorrect
 
            elif user_query.password!=password:
-            flash('Incorrect password')
+            flash('Email or password is incorrect')
                  
                  
 
@@ -95,7 +95,7 @@ def login():
             print(user_query)
         #if user doesn't exist then show an error   
         else:
-              flash('Error user does not exist')
+              flash('Email or password is incorrect')
         
      return render_template("login.html")
 
@@ -273,12 +273,18 @@ def sign_up():
                
           
           
-          #if it has not been taken then create a new user
+          
           else:
-               new_user = users(first_name=first_name, surname=surname, email=email,password=password, username = username, user_role = "user")
-               db.session.add(new_user)
-               db.session.commit()
-               return redirect(url_for("login"))
+               #check if password matches confirm passoword
+               if password==confirm_password:
+                #if it has not been taken then create a new user
+                new_user = users(first_name=first_name, surname=surname, email=email,password=password, username = username, user_role = "user")
+                db.session.add(new_user)
+                db.session.commit()
+                return redirect(url_for("login"))
+               else:
+                   flash("Error passwords do not match","not_match_password")
+                   return redirect(url_for("sign_up"))
      else:
         # render the sign-up form here
          return render_template("/sign_up.html")

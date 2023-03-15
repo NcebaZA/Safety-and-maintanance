@@ -1,22 +1,49 @@
-<!DOCTYPE html>
-<html>
+
 
 {%extends "base.html"%}
+{%block head%}<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script> {%endblock%}
 {% block title %}Add user{% endblock %}
 {%block content%}
 
-<head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 
-<h1 class="text-center">Sign Up</h1>
+
+<script src="jquery-3.6.3.min.js">
+  $(document).ready(function() {
+    $('#confirm-password').on('keyup',function() {
+      var password = $('#password').val();
+      var confirm_password = $(this).val();
+
+      if (password!=confirm_password){
+
+        $(this).addClass("is-invalid");
+        $('#password').addClass("is-invalid")
+      }
+     
+
+    });
+  });
+</script>
+
+
+<div class="container-md position-absolute top-50 start-50 translate-middle px-5 py-5 shadow-lg p-3  bg-body rounded col-lg-5 ">
+  {% with messages = get_flashed_messages(category_filter=["not_match_password"]) %}
+      {% if messages %}
+        
+        {% for message in messages %}
+        
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% endwith %}
+  <h1 class="text-center">Sign Up</h1>
 
 <p style="text-align:center;">Please fill out the form below to create your account.</p>
 
-
-<div class="container">
     <form method="POST">
       <!-- form elements go here -->
       <div class="form-group">
@@ -26,7 +53,7 @@
 
       <div class="form-group">
         <label for="surname">Surname:</label>
-        <input type="text" class="form-control" id="surname" name="surname">
+        <input type="text" class="form-control" id="surname" name="surname" >
       </div>
 
       <div class="form-group">
@@ -41,15 +68,18 @@
       
       <div class="form-group">
         <label for="password">Password:</label>
-        <input type="password" class="form-control" id="password" name="password">
+        <input type="password" class="form-control " id="password" name="password">
       </div>
       
       <div class="form-group">
         <label for="confirm-password">Confirm Password:</label>
-        <input type="password" class="form-control" id="confirm-password" name="confirm-password">
+        <input type="password" class="form-control mt-3 " id="confirm-password" name="confirm-password">
+        <div id="validationServerUsernameFeedback" class="invalid-feedback">
+          Make sure that your passwords match.
+        </div>
       </div>
       
-      <button type="submit" class="btn btn-primary">Sign Up</button>
+      <button type="submit" class="btn btn-primary mt-4"id="submitButton">Sign Up</button>
 
       
 
