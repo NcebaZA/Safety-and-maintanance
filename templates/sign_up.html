@@ -8,18 +8,24 @@
 
 
 
-<script src="jquery-3.6.3.min.js">
+<script >
   $(document).ready(function() {
-    $('#confirm-password').on('keyup',function() {
+    $('#sign_up_form').on('submit',function() {
       var password = $('#password').val();
       var confirm_password = $(this).val();
 
       if (password!=confirm_password){
-
-        $(this).addClass("is-invalid");
-        $('#password').addClass("is-invalid")
+        event.preventDefault();
+        $('#confirm-password').addClass("is-invalid");
+        $('#password').addClass("is-invalid");
+        
+        
       }
-     
+     else{
+      $(this).removeClass("is-invalid");
+        $('#password').removeClass("is-invalid");
+        this.submit();
+     }
 
     });
   });
@@ -44,7 +50,7 @@
 
 <p style="text-align:center;">Please fill out the form below to create your account.</p>
 
-    <form method="POST">
+    <form method="POST" id="sign_up_form">
       <!-- form elements go here -->
       <div class="form-group">
         <label for="username">First Name:</label>
@@ -79,7 +85,7 @@
         </div>
       </div>
       
-      <button type="submit" class="btn btn-primary mt-4"id="submitButton">Sign Up</button>
+      <button type="submit" class="btn btn-primary mt-4 "id="submitButton">Sign Up</button>
 
       
 
