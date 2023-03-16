@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import flask_login
+from random import randint
 
 
 db = SQLAlchemy()
@@ -56,7 +57,7 @@ class report(db.Model):
         reporterRole = db.Column(db.String(20))
         
         def gen_ref(self):
-                self.referenceNo = self.campus[0:2].upper() + str(self.id).rjust(6, '0')
+                self.referenceNo = self.campus[0:2].upper() + "-" + self.campusBlock[0] + chr(randint(49,57)) + chr(randint(49,57)) + chr(randint(49,57)) + chr(randint(49,57))
 
         #relationships here
         user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'))

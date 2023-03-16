@@ -1,0 +1,42 @@
+<div class="container px-5 py-5 justify-content-center">
+    <!--Notice card-->
+    <div class="container fw-bold fs-3">
+        Announcements
+    </div>
+    {%for item in pages.items%}
+    <div class="card">
+
+
+        <div class="card-body">
+            <h5 class="card-title">Notice</h5>
+            <p class="card-text"> {{item.announcements}}</p>
+            <div class="fw-bold">{{item.datePosted.strftime('%Y-%m-%d %H:%M')}}</div>
+        </div>
+    </div>
+    {%endfor%}
+
+    <!--Pagination-->
+    <div class="container">
+        <nav class="my-3" aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if not pages.has_prev %} disabled {% endif %}">
+                    <a class="page-link" href="./home?page={{ pages.prev_num }}">Previous</a>
+                </li>
+
+                {% for page in pages.iter_pages(left_edge=0, right_edge=0, left_current=1, right_current=1) %}
+                {% if page %}
+                <li class="page-item {% if page == pages.page %} active {% endif %} "><a class="page-link"
+                        href="./home?page={{ page }}">{{ page }}</a></li>
+                {% else %}
+
+                {% endif %}
+                {% endfor %}
+
+                <li class="page-item {% if not pages.has_next %} disabled {% endif %}">
+                    <a class="page-link" href="./home?page={{ pages.next_num }}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+</div

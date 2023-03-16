@@ -76,7 +76,12 @@ def user_loader(user_id):
 
 # HomePage route
 @app.route("/")
+@app.route("/home")
 def index():
+    page=request.args.get("page",1,type=int)
+    notices = notice_board.query.paginate(page=page,per_page=5)
+    if notices:
+        return render_template("/home_screen/Home_screen.html", pages=notices)
     return render_template("/home_screen/Home_screen.html")
 
 #About us page route

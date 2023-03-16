@@ -49,26 +49,11 @@
 {%block title%} Home {%endblock%}
 {%block content%}
 <body>
-  <header>
-    <div class="logo">DUT Maintance</div>
-    <nav class=" navbar navbar-expand-lg">
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/about-us">About</a></li>
-        <li><a href="/issues_table">View Issues</a></li>
-        {%if  current_user.is_authenticated %}
-        <li><a href="/logout">Logout</a></li>
-
-        {% else %}
-
-        <li><a href="/login">Login</a></li>
-        {%endif%}
-      </ul>
-    </nav>
-  </header>
+  {%include "navbar.html"%}
   <h1>Welcome to DUT's Safety and Maintenance Home Screen</h1>
+
   <div class="dashboard">
-    <!-- dashboard widgets go here -->
+    {%include "/noticeboard/noticeboard.html"%}
   </div>
 </body>
 {%endblock%}
