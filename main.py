@@ -73,6 +73,35 @@ def create_user():
 
 listUser = []
 
+@app.route("/view", methods=["POST","GET"])
+def view():
+    if request.method == "POST":
+        data = request.get_json()
+        rep = report.query.get(data['id'])
+
+        # print(f"data from POST | {data}")
+
+        if data['item_type'] == "priority":
+            if data['value'] == "Low":
+                rep.priorityOfIssue = 0
+            elif data['value'] == "Mid":
+                rep.priorityOfIssue = 1
+            elif data['value'] == "High":
+                rep.priorityOfIssue = 2 
+            db.session.commit()
+
+        if data['item_type'] == "status":
+            rep.issueStatus = data['value']
+            db.session.commit()
+
+        return jsonify({'status': 'success','data':{}})
+        
+    if request.method == "GET":
+        report_id= request.args.get("id")
+        rep = report.query.get(report_id)
+        
+        return render_template('view_details.html', report=rep)
+
 
 # The function below is a test of gettinng all users from database table
 @app.route("/get_users")
@@ -148,7 +177,7 @@ def show_issues():
             gbl['cur_args'] = argsPar
 
         filtered_data = None
-        sql_query = 'SELECT * FROM tdata_db'
+        sql_query = 'SELECT * FROM report'
 
         if ('keyword' in main['cur_args'].keys()) or (
                 'campus' in main['cur_args'].keys()) or (
@@ -160,7 +189,7 @@ def show_issues():
             if main['cur_args']['keyword'] != ['']:
                 sql_query += " ("
                 for param in main['cur_args']['keyword']:
-                    sql_query += f" title LIKE '{param}%'"
+                    sql_query += f" referenceNo LIKE '{param}%'"
                 sql_query += " )"
 
         if 'campus' in main['cur_args'].keys():
@@ -180,27 +209,30 @@ def show_issues():
                     sql_query += " AND"
                 sql_query += " ("
                 for param in main['cur_args']['block']:
-                    sql_query += f" block='{param}'"
+                    sql_query += f" campusBlock='{param}'"
                     if param != main['cur_args']['block'][-1]:
                         sql_query += ' OR'
                 sql_query += " )"
 
         if 'priority' in main['cur_args'].keys():
+            # key_val is used to convert string args to int for the database!
+            key_val = {'low' : 0, 'mid' : 1, 'high' : 2}
             if main['cur_args']['priority'] != ['']:
                 if (sql_query[-1] == ")"):
                     sql_query += " AND"
                 sql_query += " ("
                 for param in main['cur_args']['priority']:
-                    sql_query += f" priority='{param}'"
+                    sql_query += f" priorityOfIssue='{key_val[param]}'"
                     if param != main['cur_args']['priority'][-1]:
                         sql_query += ' OR'
                 sql_query += " )"
 
-        filtered_data = tdataDB.query.from_statement(db.text(sql_query))
+        print(f"sql_query | {sql_query}")
+        filtered_data = report.query.from_statement(db.text(sql_query))
 
-        tdataDB_id = [item.id for item in filtered_data.all()]
-        main['pages'] = tdataDB.query.filter(tdataDB.id.in_(
-            tuple(tdataDB_id))).paginate(page=page, per_page=12)
+        report_ids = [item.id for item in filtered_data.all()]
+        main['pages'] = report.query.filter(report.id.in_(
+            tuple(report_ids))).paginate(page=page, per_page=8)
 
         return main
 
@@ -238,6 +270,56 @@ def show_issues():
                 'redirect': to_url
             }
         })
+
+@app.route("/run_models")
+def run_models():
+    with app.app_context():
+        db.create_all()
+
+    return "Done!"
+
+# for testing purposes - until report screen works
+@app.route('/init_report')
+def init_report():
+
+    def gen_ref():
+        chs = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+        nm = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        ref = ''
+        while len(ref)<10:
+                if len(ref)<=5:
+                    ref+=chs[randint(0,len(chs)-1)]
+                else:
+                    ref+=chs[randint(0,len(nm)-1)]
+        return ref
+
+    camp = ["Steve Biko","Ritson","ML Sultan"];
+    # 0 - Low, 1 - Mid, 2 - High
+    pr = [0,1,2]
+    bl = ["A Block", "B Block", "C Block"]
+    stat = ["Pending","In Progress","Completed"]
+    rol = ["Student","Security Guard","Staff","General Worker"]
+    dep = ["Information Technology","Human Resources","Finance","Logistics","Marketing"]
+    p = ["Alice","John","Tom","Angelica","Timothy","Linus","Franklin"]
+    def rm():
+        c = ["AM","DB","BC"]
+        res = c[randint(0,len(c)-1)] + str(randint(1000,3000))
+        return res
+
+    for i in range(1,48):
+        new_rep = report(referenceNo=gen_ref(),campus=camp[randint(0,len(camp)-1)],
+                     campusBlock=bl[randint(0,len(bl)-1)],
+                     department=dep[randint(0,len(dep)-1)],
+                     roomNumber=rm(),
+                     reporter=p[randint(0,len(p)-1)],
+                     dateReported=datetime.now(),
+                     issueStatus=stat[randint(0,len(stat)-1)],
+                     reporterRole=rol[randint(0,len(rol)-1)],
+                     priorityOfIssue=pr[randint(0,len(pr)-1)])
+        db.session.add(new_rep)
+    db.session.commit()
+
+    return "Done!"
 
 # admin page route
 """You can add the admin page route here"""

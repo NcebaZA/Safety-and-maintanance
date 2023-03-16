@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from random import randint
 
 
 db = SQLAlchemy()
@@ -58,7 +59,6 @@ class report(db.Model):
         dateReported = db.Column(db.DateTime, default = datetime.utcnow)
         issueStatus = db.Column(db.String(20))
         reporterRole = db.Column(db.String(20))
-        upvoteCount = db.Column(db.Integer)
     
         #relationships here
         user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'))

@@ -2,12 +2,14 @@
 {% for issue in pages.items %}
 <div class="row border-bottom" style="cursor:pointer">
     <div class="card" style="--bs-card-border-radius:none;--bs-card-border-color:none;">
-        <div class="card-body">
-            <h6 class="card-title">{{issue["title"]}}</h6>
-            <p class="card-text">{{issue["campus"]}} | {{issue["block"]}} |
-                {{issue["priority"]}}
-            </p>
-        </div>
+        <a class="text-black text-decoration-none" href="/view?id={{issue['id']}}">
+            <div class="card-body">
+                <h6 class="card-title">{{issue["referenceNo"]}}</h6>
+                <p class="card-text">{{issue["campus"]}} | {{issue["campusBlock"]}} |
+                    {% if issue["priorityOfIssue"]==0 %}{{'Low'}}{% elif issue["priorityOfIssue"]==1 %}{{'Mid'}}{% elif issue["priorityOfIssue"]==2 %}{{'High'}}{% endif %}
+                </p>
+            </div>
+        </a>
     </div>
 </div>
 {% endfor %}
