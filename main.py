@@ -519,7 +519,7 @@ def add_report():
             db.session.add(new_report)
             db.session.commit()
 
-        return "Report added succesfully"
+        return render_template('report_added_sucess.html')
     else:
         return render_template("reportscreen.html")
 
