@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<!--table related-->
+<link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // function to create the dropdown HTML
+        function createDropdown(id, values) {
+            var dropdown = '<select id="' + id + '-select" class="form-select">';
+            $.each(values, function (index, value) {
+                dropdown += '<option value="' + value + '">' + value + '</option>';
+            });
+            dropdown += '</select>';
+            return dropdown;
+        }
+
+        // function to update the priority/status type and reset the layout
+        function updateType(id, type) {
+            $('#' + id + '-type').text(type);
+            $('#' + id + '-block').empty();
+            $('#' + id + '-block').append('<p id="' + id + '-type">' + type + '</p>');
+            $('#' + id + '-block').append('<span id="edit-' + id + '" class="btn material-symbols-outlined border border-0">edit</span>');
+        }
+
+        // edit priority click event
+        $(document).on('click', '#edit-priority', function () {
+            // create dropdown HTML
+            var dropdown = createDropdown('priority', ['Low', 'Mid', 'High']);
+            // get current priority type
+            var priorityType = $('#priority-type').text();
+            // replace priority block with dropdown and save button
+            $('#priority-block').empty();
+            $('#priority-block').append(dropdown);
+            $('#priority-select option[value="' + priorityType + '"]').prop('selected', true);
+            $('#priority-block').append('<span id="save-priority" class="btn material-symbols-outlined border border-0">save</span>');
+        });
+
+        // save priority click event
+        $(document).on('click', '#save-priority', function () {
+            // get selected priority
+            var priority = $('#priority-select').val();
+            // update priority type and reset layout
+            updateType('priority', priority);
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var rep_id = urlParams.get("id");
+
+            // send AJAX POST request to /view with the new priority type
+            $.ajax({
+                type: "POST",
+                url: "/view",
+                data: JSON.stringify({
+                    id : rep_id,
+                    item_type: "priority",
+                    value: priority
+                }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                    console.log({
+                        id : rep_id,
+                        item_type: "priority",
+                        value: priority
+                    });
+                }
+            });
+        });
+
+        // edit status click event
+        $(document).on('click', '#edit-status', function () {
+            // create dropdown HTML
+            var dropdown = createDropdown('status', ['Pending', 'In Progress', 'Completed']);
+            // get current status type
+            var statusType = $('#status-type').text();
+            // replace status block with dropdown and save button
+            $('#status-block').empty();
+            $('#status-block').append(dropdown);
+            $('#status-select option[value="' + statusType + '"]').prop('selected', true);
+            $('#status-block').append('<span id="save-status" class="btn material-symbols-outlined border border-0">save</span>');
+        });
+
+        // save status click event
+        $(document).on('click', '#save-status', function () {
+            // get selected status
+            var status = $('#status-select').val();
+            // update status type and reset layout
+            updateType('status', status);
+
+            var urlParams = new URLSearchParams(window.location.search);
+            var rep_id = urlParams.get("id");
+
+            // send AJAX POST request to /view with the new status type
+            $.ajax({
+                type: "POST",
+                url: "/view",
+                data: JSON.stringify({
+                    id : rep_id,
+                    item_type: "status",
+                    value: status
+                }),
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                    console.log({
+                        id : rep_id,
+                        item_type: "status",
+                        value: status
+                    });
+                }
+            });
+        });
+    });
+
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="container">
+        <div class="row align-items-start">
+            <a href="/issues_table">
+                <span class="btn material-symbols-outlined border border-0 ps-1">arrow_back</span>
+            </a>
+        </div>
+    </div>
+    <div class="container-fluid" id="block-editable">
+        <div class="container mb-4">
+            <div class="row align-items-start">
+                <div class="col-3 my-3 fw-bold">
+                    ref #
+                </div>
+                <div class="col my-3">
+                    {{report["referenceNo"]}}
+                </div>
+            </div>
+
+            <div class="row align-items-start">
+                <div class="col-3 my-3 fw-bold">
+                    Priority Level
+                </div>
+                <div class="col d-flex inline my-3 gap-3" id="priority-block">
+                    <p id="priority-type">{% if report["priorityOfIssue"]==0 %}{{'Low'}}{% elif
+                        report["priorityOfIssue"]==1 %}{{'Mid'}}{% elif report["priorityOfIssue"]==2 %}{{'High'}}{%
+                        endif %}</p>
+                    <span id="edit-priority" class="btn material-symbols-outlined border border-0">edit</span>
+                </div>
+            </div>
+
+            <div class="row align-items-start">
+                <div class="col-3 my-3 fw-bold">
+                    Status
+                </div>
+                <div class="col d-flex inline my-3 gap-3" id="status-block">
+                    <p id="status-type">{{report["issueStatus"]}}</p>
+                    <span id="edit-status" class="btn material-symbols-outlined border border-0">edit</span>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row align-items-start">
+                <div class="col-3 my-3 fw-bold">
+                    Campus
+                </div>
+                <div class="col my-3">
+                    {{report["campus"]}}
+                </div>
+
+                <div class="col-3 my-3 fw-bold">
+                    Block
+                </div>
+                <div class="col my-3">
+                    {{report["campusBlock"]}}
+                </div>
+            </div>
+            <div class="row align-items-start">
+                <div class="col-3 my-3 fw-bold">
+                    Room #
+                </div>
+                <div class="col my-3">
+                    {{report["roomNumber"]}}
+                </div>
+            </div>
+        </div>
+        <div class="container my-4">
+            <div class="row align-items-start">
+                <div class="col-3 my-3 fw-bold">
+                    Reporter
+                </div>
+                <div class="col my-3">
+                    {{report["reporter"]}}
+                </div>
+
+                <div class="col-3 my-3 fw-bold">
+                    Reporter Role
+                </div>
+                <div class="col my-3">
+                    {{report["reporterRole"]}}
+                </div>
+            </div>
+            <div class="row align-items-start">
+                <div class="col-3 my-3 fw-bold">
+                    Date Reported
+                </div>
+                <div class="col my-3">
+                    {{report["dateReported"]}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -68,7 +68,6 @@ class report(db.Model):
         dateReported = db.Column(db.DateTime, default = datetime.utcnow)
         issueStatus = db.Column(db.String(20))
         reporterRole = db.Column(db.String(20))
-        upvoteCount = db.Column(db.Integer)
     
         #relationships here
         user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'))
@@ -110,3 +109,12 @@ class notice_board(db.Model):
         
         #relationships here
         user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
+
+# test data
+class tdataDB(db.Model):
+
+        id = db.Column(db.Integer, primary_key=True)
+        title = db.Column(db.String(64), nullable=False)
+        campus = db.Column(db.String(64))
+        block = db.Column(db.String(64))
+        priority = db.Column(db.String(64))

@@ -1,12 +1,19 @@
-<nav class="mt-4" aria-label="...">
-    <ul class="pagination pagination-md justify-content-center">
-        <li class="page-item active" aria-current="page">
-            <span class="page-link">
-                1
-                <span class="visually-hidden">(current)</span>
-            </span>
+<nav class="my-3" aria-label="Pagination">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if not pages.has_prev %} disabled {% endif %}">
+            <a class="page-link" href="./issues_table?page={{ pages.prev_num }}{%if args['keyword'] %}&keyword={{ args['keyword'] }}{% endif %}{%if args['campus'] %}&campus={{ args['campus'] }}{% endif %}{%if args['block'] %}&block={{ args['block'] }}{% endif %}{%if args['priority'] %}&priority={{ args['priority'] }}{% endif %}">Previous</a>
         </li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
+
+        {% for page in pages.iter_pages(left_edge=0, right_edge=0, left_current=1, right_current=1) %}
+            {% if page %}
+                <li class="page-item {% if page == pages.page %} active {% endif %} "><a class="page-link" href="./issues_table?page={{ page }}{%if args['keyword'] %}&keyword={{ args['keyword'] }}{% endif %}{%if args['campus'] %}&campus={{ args['campus'] }}{% endif %}{%if args['block'] %}&block={{ args['block'] }}{% endif %}{%if args['priority'] %}&priority={{ args['priority'] }}{% endif %}">{{ page }}</a></li>
+            {% else %}
+                
+            {% endif %}
+        {% endfor %}
+        
+        <li class="page-item {% if not pages.has_next %} disabled {% endif %}">
+            <a class="page-link" href="./issues_table?page={{ pages.next_num }}{%if args['keyword'] %}&keyword={{ args['keyword'] }}{% endif %}{%if args['campus'] %}&campus={{ args['campus'] }}{% endif %}{%if args['block'] %}&block={{ args['block'] }}{% endif %}{%if args['priority'] %}&priority={{ args['priority'] }}{% endif %}">Next</a>
+        </li>
     </ul>
 </nav>

@@ -1,14 +1,6 @@
-{% extends "base.html" %}
-
-{% block head %}
-<link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-{% endblock %}
-
-{% block content %}
-<div class="container">
+<div class="container px-0">
     <div class="container">{% include 'filters_bar.html' %}</div>
-    <div class="container">{% include 'issue_card.html' %}</div>
-    <div class="container">{% include 'pagination.html' %}</div>
+    <div class="container">
+        <div class="container" id="issue-items">{% include 'issue_card.html'%}</div>
+    </div>
 </div>
-{% endblock %}

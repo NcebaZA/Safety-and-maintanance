@@ -1,4 +1,4 @@
-from flask import Flask, abort, flash, redirect, render_template, request, url_for
+from flask import Flask, abort, flash, jsonify, redirect, render_template, request, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
@@ -17,7 +17,7 @@ app = Flask(__name__)
 login_manager = flask_login.LoginManager()
 login_manager.login_view = "login"
 
-#database config
+# database config
 database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
     dbuser="bgoscsfb",
     dbpass="xOIQsgnH2fM5hLsfmVLT_UZbrdlPkD78",
@@ -58,8 +58,22 @@ def user_loader(user_id):
      return users.query.get(int(user_id))
 
 
+#The line of code below is for performing database migrations 
+migrate = Migrate(app, db)
 
-#HomePage route
+
+#setting up login manager which is used for user authentication
+
+login_manager.init_app(app)
+
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+     return users.query.get(int(user_id))
+
+
+# HomePage route
 @app.route("/")
 def index():
     return render_template("/home_screen/Home_screen.html")
@@ -71,8 +85,8 @@ def about_us():
      return render_template("/home_screen/About.html")
 
 
-#This shows the login page for now. No login functionality has been added
-@app.route("/login", methods=["GET","POST"])
+# This shows the login page for now. No login functionality has been added
+@app.route("/login", methods=["GET", "POST"])
 def login():
      #if user is logged no need to show login page
        # """Login page code here"""
@@ -272,100 +286,199 @@ def forbidden():
 
 
 
-#This function takes user to forgot passsword page. NB: not functionality has been added 
+# This function takes user to forgot passsword page. NB: not functionality has been added
 @app.route("/forgot_password")
 def forgot_password():
-     return render_template("forgot-password1.html")
-
-#This function takes user to issues table. NB: no functionality has been added
-@app.route("/issues_table")
-def show_issues_table():
-     return render_template("issues_table.html")
+    return render_template("forgot-password1.html")
 
 
-#sign up route
-@app.route("/sign_up", methods=["POST","GET"])
-def sign_up():
+# This function takes user to issues table.
+@app.route("/issues_table", methods=['GET', 'POST'])
+def show_issues():
+    global gbl
+    gbl = {}
 
-     if request.method == "POST":
-          first_name =  request.form.get("first_name")
-          surname = request.form.get("surname")
-          username = request.form.get("username")
-          email = request.form.get("email")
-          password = request.form.get("password")
-          confirm_password = request.form.get("confirm-password")
-          print(first_name, surname, username, email, password, confirm_password)
-      
-      # process the sign-up data here
-          #Check if user name or email has already been taken
-          if users.query.filter_by(email=email).first() or users.query.filter_by(username=username).first():
-               flash("Username or email already in use")
-               return redirect(url_for("sign_up"))
-               
-          
-          else:
-               #check if password matches confirm passoword
-               if password==confirm_password:
-                #if it has not been taken then create a new user
-                new_user = users(first_name=first_name, surname=surname, email=email,password=password, username = username, user_role = "user")
-                db.session.add(new_user)
-                db.session.commit()
-                from send_email import sendtoken
-                sendtoken(email=email)
-                return redirect(url_for("login"))
-               else:
-                   flash("Error passwords do not match","not_match_password")
-                   return redirect(url_for("sign_up"))
-     else:
-        # render the sign-up form here
-         return render_template("/sign_up.html")
+    def append_args(link, d):
+        for param in d:
+            link += f"{param}={d[param]}"
+            if list(d.keys())[-1]!=param:
+                link += "&"
+        return link
 
+    def format_args(args):
+        return args.split('+')
 
+    def get_args_href(params):
+        result = {}
+        for item in params:
+            t_args = params[item]
+            arg_string = ''
+            for obj in t_args:
+                if t_args[-1]==obj:
+                    arg_string+=obj
+                else:
+                    arg_string+=obj+'+'
+            arg_string = arg_string.replace(' ', '%20').replace('+', '%2B')
+            result[item]=arg_string
+        return result
 
-    
+    def get_all_issues(argsPar={}):
+        page = request.args.get('page', 1, type=int)
+        keyword = request.args.get('keyword', '', type=str)
+        campus = request.args.get('campus', '', type=str)
+        block = request.args.get('block', '', type=str)
+        priority = request.args.get('priority', '', type=str)
 
-    #if it hasn't then update confirm column to true and redirect
+        main = {'cur_args': argsPar, 'pages': {}}
 
-    
+        if argsPar == {}:
+            if keyword != '':
+                main['cur_args']['keyword'] = format_args(keyword)
 
-      
+            if campus != '':
+                main['cur_args']['campus'] = format_args(campus)
 
-@app.route("/account-confirm/<token>")
-def confirmToken(token):
-    try:
-        # load the token and verify the signature
-        data = serializer.loads(token, max_age=3600)
+            if block != '':
+                main['cur_args']['block'] = format_args(block)
 
-        # extract the user_id and email from the data
-        user_id = data['user_id']
-        user_info = users.query.get(user_id)
-        if user_info.confirmed ==1:
-            return redirect(url_for("index"))
+            if priority != '':
+                main['cur_args']['priority'] = format_args(priority)
+
+            gbl['cur_args'] = main['cur_args']
         else:
-            # do something with the data
-            user_info.confirmed = True
-            db.session.commit()
-      
-        return redirect(url_for("index"))
+            gbl['cur_args'] = argsPar
 
-    except SignatureExpired:
-        # the token has expired
-        return 'The confirmation link has expired.'
+        filtered_data = None
+        sql_query = 'SELECT * FROM report'
 
-    except BadSignature:
-        # the token is invalid
-        return 'The confirmation link is invalid.'
+        if ('keyword' in main['cur_args'].keys()) or (
+                'campus' in main['cur_args'].keys()) or (
+                    'block' in main['cur_args'].keys()) or (
+                        'priority' in main['cur_args'].keys()):
+            sql_query += ' WHERE'
 
-     
+        if 'keyword' in main['cur_args'].keys():
+            if main['cur_args']['keyword'] != ['']:
+                sql_query += " ("
+                for param in main['cur_args']['keyword']:
+                    sql_query += f" referenceNo LIKE '{param}%'"
+                sql_query += " )"
 
+        if 'campus' in main['cur_args'].keys():
+            if main['cur_args']['campus'] != ['']:
+                if (sql_query[-1] == ")"):
+                    sql_query += " AND"
+                sql_query += " ("
+                for param in main['cur_args']['campus']:
+                    sql_query += f" campus='{param}'"
+                    if param != main['cur_args']['campus'][-1]:
+                        sql_query += ' OR'
+                sql_query += " )"
 
+        if 'block' in main['cur_args'].keys():
+            if main['cur_args']['block'] != ['']:
+                if (sql_query[-1] == ")"):
+                    sql_query += " AND"
+                sql_query += " ("
+                for param in main['cur_args']['block']:
+                    sql_query += f" campusBlock='{param}'"
+                    if param != main['cur_args']['block'][-1]:
+                        sql_query += ' OR'
+                sql_query += " )"
 
-#admin page route
+        if 'priority' in main['cur_args'].keys():
+            # key_val is used to convert string args to int for the database!
+            key_val = {'low' : 0, 'mid' : 1, 'high' : 2}
+            if main['cur_args']['priority'] != ['']:
+                if (sql_query[-1] == ")"):
+                    sql_query += " AND"
+                sql_query += " ("
+                for param in main['cur_args']['priority']:
+                    sql_query += f" priorityOfIssue='{key_val[param]}'"
+                    if param != main['cur_args']['priority'][-1]:
+                        sql_query += ' OR'
+                sql_query += " )"
+
+        print(f"sql_query | {sql_query}")
+        filtered_data = report.query.from_statement(db.text(sql_query))
+
+        report_ids = [item.id for item in filtered_data.all()]
+        main['pages'] = report.query.filter(report.id.in_(
+            tuple(report_ids))).paginate(page=page, per_page=8)
+
+        return main
+
+    if request.method == 'GET':
+        items_get = get_all_issues()
+
+        return render_template("view_issues.html",
+                               pages=items_get['pages'],
+                               args=get_args_href(gbl['cur_args']))
+
+    if request.method == 'POST':
+        data = request.json
+
+        items_post = get_all_issues()
+
+        combine_args = {**gbl['cur_args'], **data}
+        print(f"combine_args  | {combine_args}")
+
+        items_post = get_all_issues(combine_args)
+
+        print(get_args_href(combine_args))
+
+        to_url = append_args(request.full_path, get_args_href(combine_args))
+        print(f"to_url | {to_url}")
+
+        # for when all param are removed
+        if to_url[-1] == "?":
+            to_url = './issues_table'
+
+        return jsonify({
+            'status': 'success',
+            'data': {
+                'items':
+                render_template('issue_card.html',pages=items_post['pages'],args=get_args_href(combine_args)),
+                'redirect': to_url
+            }
+        })
+
+# admin page route
 """You can add the admin page route here"""
 
-#Report page route
+# Report page route
 """Add report page route info here"""
+@app.route("/view", methods=["POST","GET"])
+def view():
+    if request.method == "POST":
+        data = request.get_json()
+        rep = report.query.get(data['id'])
 
+        # print(f"data from POST | {data}")
+
+        if data['item_type'] == "priority":
+            if data['value'] == "Low":
+                rep.priorityOfIssue = 0
+            elif data['value'] == "Mid":
+                rep.priorityOfIssue = 1
+            elif data['value'] == "High":
+                rep.priorityOfIssue = 2 
+            db.session.commit()
+
+        if data['item_type'] == "status":
+            rep.issueStatus = data['value']
+            db.session.commit()
+
+        return jsonify({'status': 'success','data':{}})
+        
+    if request.method == "GET":
+        report_id= request.args.get("id")
+        rep = report.query.get(report_id)
+
+        if rep:
+            return render_template('view_details.html', report=rep)
+        else:
+            abort(404)
 
 if __name__ == "__main__":
     
