@@ -17,19 +17,14 @@ class users(db.Model,flask_login.UserMixin):
         email = db.Column(db.String(255), nullable=False, unique = True )
         password = db.Column(db.String(255), nullable=False )
         username = db.Column(db.String(40), nullable=False, unique = True )
-        profile_picture = db.Column(db.LargeBinary)
         user_role = db.Column(db.String(25))
         confirmed = db.Column(db.Boolean, default=False)
         #add relationships
 
-        """relationship with account history table"""
-        user_history = db.relationship('account_history',backref='users', lazy=True )
-
         """relationship with report table"""
         user_report = db.relationship("report", backref='users', lazy =True)
 
-        """relationship with report_comments table"""
-        report_comment = db.relationship("report_comments", backref="users", lazy=True)
+     
 
         """relationship with notice board"""
         notice = db.relationship("notice_board", backref="users", lazy=True)  
@@ -42,38 +37,32 @@ class users(db.Model,flask_login.UserMixin):
 
 
 
-#account history table
-
-class account_history(db.Model):
-         id = db.Column(db.Integer, primary_key=True)
-         date_created = db.Column(db.DateTime, default=datetime.utcnow)
-         description = db.Column(db.String(50))
-
-         #add relationships
-         user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'))
 
 
 #Report table
 
 class report(db.Model):
         id = db.Column(db.Integer, primary_key=True)
-        title = db.Column(db.String(255))
-        referenceNo = db.Column(db.String(10), nullable =False)
+        description = db.Column(db.String(255))
+        referenceNo = db.Column(db.String(10))
         campus = db.Column(db.String(20), nullable =False)
         campusBlock = db.Column(db.String(5))
 
         roomNumber = db.Column(db.String(5))
-        priorityOfIssue = db.Column(db.Integer)
+        priorityOfIssue = db.Column(db.Integer, default=0)
         reporter =  db.Column(db.String(50))
         dateReported = db.Column(db.DateTime, default = datetime.utcnow)
-        issueStatus = db.Column(db.String(20))
+        issueStatus = db.Column(db.String(20), default="Pending")
         reporterRole = db.Column(db.String(20))
-    
+        
+        def gen_ref(self):
+                self.referenceNo = self.campus[0:2].upper() + str(self.id).rjust(6, '0')
+
         #relationships here
         user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'))
 
-        """relationship with reports_comments table"""
-        report_comment = db.relationship("report_comments", backref='report', lazy =True)
+      
+        
         #relationship here
         report_image = db.relationship("image", backref="report",lazy=True)
 
@@ -87,16 +76,6 @@ class image(db.Model):
         report_id= db.Column(db.Integer, db.ForeignKey('report.id',ondelete = 'Cascade'))
 
         
-#report comments
-class report_comments(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        reportComment = db.Column(db.String(100))
-        dateCommented = db.Column(db.DateTime, default = datetime.utcnow)
-        
-        #relationships here
-        report_id = db.Column(db.Integer, db.ForeignKey('report.id', ondelete = 'Cascade'), nullable = False)
-        user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'Cascade'))
-
 
 
 #notice board table

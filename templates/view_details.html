@@ -54,7 +54,7 @@
                 type: "POST",
                 url: "/view",
                 data: JSON.stringify({
-                    id : rep_id,
+                    id: rep_id,
                     item_type: "priority",
                     value: priority
                 }),
@@ -65,7 +65,7 @@
                 error: function (error) {
                     console.log(error);
                     console.log({
-                        id : rep_id,
+                        id: rep_id,
                         item_type: "priority",
                         value: priority
                     });
@@ -101,7 +101,7 @@
                 type: "POST",
                 url: "/view",
                 data: JSON.stringify({
-                    id : rep_id,
+                    id: rep_id,
                     item_type: "status",
                     value: status
                 }),
@@ -112,7 +112,7 @@
                 error: function (error) {
                     console.log(error);
                     console.log({
-                        id : rep_id,
+                        id: rep_id,
                         item_type: "status",
                         value: status
                     });
@@ -215,6 +215,18 @@
                     {{report["dateReported"]}}
                 </div>
             </div>
+            {% if img %}
+            <div class="row align-items-start">
+                <div class="col-3 my-3 fw-bold">
+                    Image
+                </div>
+                <div class="col my-3">
+                    <figure class="figure">
+                        <img class="figure-img img-fluid" src="data:image/png;base64,{{img}}" style="width: 28rem;height: 16rem;" alt="Image" />
+                    </figure>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

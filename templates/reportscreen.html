@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center mb-3 fs-4">
+        Report form
+    </div>
+    <div class="container px-3 py-3">
+        <form method="POST" action="/addreport" enctype="multipart/form-data">
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="campus" class="fw-semibold">Campus</label>
+                        <select class="form-select" id="campus" name="campus">
+                            <option value="" selected="">Select Campus</option>
+                            <option value="Steve Biko">Steve Biko</option>
+                            <option value="Ritson">Ritson</option>
+                            <option value="ML Sultan">ML Sultan</option>
+                            <option value="City Campus">City Campus</option>
+                            <option value="Briekfield">Brickfield</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="block" class="fw-semibold">Block</label>
+                        <select class="form-select" name="block" id="block">
+                            <option value="">Select Block</option>
+                            <option value="A Block">A Block</option>
+                            <option value="B Block">B Block</option>
+                            <option value="C Block">C Block</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="reporter" class="fw-semibold">Reporter Full Name</label>
+                        <input type="text" class="form-control" id="reporter" name="reporter">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="role" class="fw-semibold">Reporter Role</label>
+                        <select class="form-select" name="role" id="role">
+                            <option value="">Select Reporter Role</option>
+                            <option value="Staff Member">Staff Member</option>
+                            <option value="Student">Student</option>
+                            <option value="General Worker">General Worker</option>
+                            <option value="Security">Security</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-start mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="description" class="fw-semibold">Description</label>
+                        <textarea type="text" class="form-control" id="description" name="description" maxlength="255"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center mb-3">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="room_number" class="fw-semibold">Room Number</label>
+                        <input type="text" class="form-control" id="room_number" name="room_number">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="report_image" class="fw-semibold">Image of Issue</label>
+                        <input type="file" class="form-control-file" id="report_image" name="report_image" accept="image/*">
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center">
+                    <button type="submit" class="btn btn-primary btn-block fw-semibold">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock%}

@@ -1,4 +1,5 @@
-from flask import Flask, abort, flash, jsonify, redirect, render_template, request, url_for
+import base64
+from flask import Flask, abort, flash, jsonify, redirect, render_template, request, url_for, send_file
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
@@ -7,7 +8,7 @@ import flask_login
 from flask_login import current_user
 from flask_mail import Mail, Message
 from threading import Thread
-
+import io
 # testing by M Mngadi
 from random import randint
 # end testing
@@ -474,11 +475,54 @@ def view():
     if request.method == "GET":
         report_id= request.args.get("id")
         rep = report.query.get(report_id)
+        rep_image = rep.report_image
 
-        if rep:
+        if rep_image:
+            image_data = base64.b64encode(rep_image[0].issue_image).decode('utf-8')
+            return render_template('view_details.html', report=rep, img=image_data)
+        elif rep:
             return render_template('view_details.html', report=rep)
         else:
             abort(404)
+
+@app.route("/addreport", methods=["POST","GET"])
+def add_report():
+
+    if request.method == "POST":
+        form_campus = request.form.get("campus")
+        form_block = request.form.get("block")
+        form_reporter = request.form.get("reporter")
+        form_reporter_role = request.form.get("role")
+        form_description = request.form.get("description")
+        form_room_number = request.form.get("room_number")
+        form_report_image = request.files["report_image"]
+        refNumber = "1234567"
+        print(f"Campus:{form_campus}\nBlock:{form_block}\nReporter:{form_reporter}\nReporter_Role{form_reporter_role}\nRoom Number:{form_room_number}")
+        data=form_report_image.read()
+
+        #save report to database
+        
+        new_report = report(campus=form_campus,campusBlock=form_block,reporter=form_reporter, reporterRole=form_reporter_role, roomNumber=form_room_number, referenceNo=refNumber,description=form_description)
+
+        # generates referenceNo
+        new_report.gen_ref()
+        
+        #if there's an image 
+        if data:
+            new_image = image(issue_image=data)
+            new_report.report_image.append(new_image)
+            db.session.add(new_report)
+            db.session.commit()
+        
+        #else there's no image just add the data as is
+        else:
+            db.session.add(new_report)
+            db.session.commit()
+
+        return "Report added succesfully"
+    else:
+        return render_template("reportscreen.html")
+
 
 if __name__ == "__main__":
     
