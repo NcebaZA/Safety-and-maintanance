@@ -110,11 +110,3 @@ class notice_board(db.Model):
         #relationships here
         user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False)
 
-# test data
-class tdataDB(db.Model):
-
-        id = db.Column(db.Integer, primary_key=True)
-        title = db.Column(db.String(64), nullable=False)
-        campus = db.Column(db.String(64))
-        block = db.Column(db.String(64))
-        priority = db.Column(db.String(64))
