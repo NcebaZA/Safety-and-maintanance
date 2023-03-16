@@ -1,5 +1,5 @@
 {%extends "base.html"%}
-
+{%block title%} Notices{%endblock%}
 {% block content %}
 
 <!-- Setting values -->
@@ -10,6 +10,22 @@
 
 {%set is_active5="active"%}
 {% include "/admin_screen/nav_bar.html" %}
+ <!---   Show flash messages here -->
+
+ {% with messages = get_flashed_messages(category_filter=["UpdateNoticeSuccess"]) %}
+ {% if messages %}
+   <ul class=flashes>
+    {% for message in messages %}
+        
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <div>{{ message }}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+ {% endif %}
+{% endwith %}
+
+
 <div class="py-5">
 {% include "/admin_screen/table_notices.html" %}
 </div>
