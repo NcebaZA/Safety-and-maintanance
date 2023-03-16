@@ -1,7 +1,7 @@
 {% if pages.items %}
 {% for issue in pages.items %}
 <div class="row border-bottom" style="cursor:pointer">
-    <div class="card" style="--bs-card-border-radius:none;--bs-card-border-color:none;">
+    <div class="card">
         <a class="text-black text-decoration-none" href="/view?id={{issue['id']}}">
             <div class="card-body">
                 <h6 class="card-title">{{issue["referenceNo"]}}</h6>
