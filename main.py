@@ -1,9 +1,12 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, abort, flash, redirect, render_template, request, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 from models import *
 import flask_login
 from flask_login import current_user
+from flask_mail import Mail, Message
+from threading import Thread
 
 # testing by M Mngadi
 from random import randint
@@ -21,10 +24,21 @@ database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.forma
     dbhost="isilo.db.elephantsql.com",
     dbname="bgoscsfb"
 )
+mail_settings = {
+    "MAIL_SERVER": 'sandbox.smtp.mailtrap.io',
+    "MAIL_PORT": 2525,
+    "MAIL_USE_TLS": True,
+    "MAIL_USE_SSL": False,
+    "MAIL_USERNAME": '940727a31f1842',
+    "MAIL_PASSWORD": '0a5e18353ac097',
+    "MAIL_SUBJECT_PREFIX": 'Maitainace App'
+}
 app.config["SQLALCHEMY_DATABASE_URI"] =  "sqlite:///project.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = "thisismyverysecretkey"
-
+app.config.update(mail_settings)
+mail = Mail(app)
+serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 #initializing database to flask app
 db.init_app(app)
 
@@ -153,8 +167,26 @@ def add_user():
 @flask_login.login_required
 def show_users():
     if flask_login.current_user.user_role=='admin': 
+
         all_users = users.query.all()
         return render_template("/admin_screen/users.html", all_users=all_users)
+    else:
+
+       return redirect(url_for("forbidden"))
+    
+#Update user info
+@app.route("/admin/update-user/<id>", methods=["POST"])
+@flask_login.login_required
+def update_user_info(id):
+    if current_user.user_role == 'admin':
+        user = users.query.get(id)
+        if user:
+            user.user_role = request.form.get("user_role")
+            db.session.commit()
+            return redirect(url_for("show_users"))
+        
+    else:
+        return "You do not have the permission to access this page"
 
 #deleting users 
 """This is an endpoint for deleting users which takes in a argument of 'id' to delete a user"""
@@ -175,6 +207,9 @@ def delete_user():
          else:
              flash("User does not exist")
              return redirect(url_for("show_users"))
+    else:
+          flash("User does not exist")
+          return redirect(url_for("index"))
          
 
 #route for posting notices     
@@ -213,33 +248,27 @@ def show_notices():
             all_notices = notice_board.query.all()
             return render_template("/admin_screen/notices.html", all_notices=all_notices)
         
+@app.route("/admin/update-notice/<id>", methods=["POST"])
+@flask_login.login_required
+def updateNotice(id):
+    if flask_login.current_user.user_role=='admin':
+        notice = notice_board.query.get(id)
+        if notice:
+            notice.announcements = request.form.get("editNotice")
+            db.session.commit()
+            flash("Successfully updated notice board", category="UpdateNoticeSuccess")
+            return redirect(url_for("show_notices"))
+        else:
+            flash("Notice does not exist",category="updateNoticeError")
+            return redirect(url_for("show_notices"))
+        
 
 
 @app.route("/forbidden")
 def forbidden():
      return render_template("/admin_screen/access_denied.html"),403
 
-##The function below is a test of adding a user to the database table
-@app.route("/create_user")
-def create_user():
-        new_user = users(first_name = "Nokthula", surname="Makhanya", email= "22023482@dut4life.ac.za", password="2023", username = "thuli012", user_role="admin")
-        db.session.add(new_user)
-        db.session.commit()
 
-        return redirect(url_for("login"))
-
-listUser=[]
-
-#The function below is a test of gettinng all users from database table
-@app.route("/get_users")
-@flask_login.login_required
-def get_users():
-    all_users = users.query.all()
-    for user in all_users:
-          listUser.append(user.email)
-          print(user)
-
-    return f"These are users in the system {listUser}"
 
 
 #This function takes user to forgot passsword page. NB: not functionality has been added 
@@ -251,6 +280,7 @@ def forgot_password():
 @app.route("/issues_table")
 def show_issues_table():
      return render_template("issues_table.html")
+
 
 #sign up route
 @app.route("/sign_up", methods=["POST","GET"])
@@ -272,8 +302,6 @@ def sign_up():
                return redirect(url_for("sign_up"))
                
           
-          
-          
           else:
                #check if password matches confirm passoword
                if password==confirm_password:
@@ -281,6 +309,8 @@ def sign_up():
                 new_user = users(first_name=first_name, surname=surname, email=email,password=password, username = username, user_role = "user")
                 db.session.add(new_user)
                 db.session.commit()
+                from send_email import sendtoken
+                sendtoken(email=email)
                 return redirect(url_for("login"))
                else:
                    flash("Error passwords do not match","not_match_password")
@@ -289,11 +319,42 @@ def sign_up():
         # render the sign-up form here
          return render_template("/sign_up.html")
 
-         
-     
+
+
+    
+
+    #if it hasn't then update confirm column to true and redirect
+
+    
+
+      
+
+@app.route("/account-confirm/<token>")
+def confirmToken(token):
+    try:
+        # load the token and verify the signature
+        data = serializer.loads(token, max_age=3600)
+
+        # extract the user_id and email from the data
+        user_id = data['user_id']
+        user_info = users.query.get(user_id)
+        if user-info.is_confrimed():
+            return redirect(urk_for("index"))
+        user_info.confirmed = True
+        db.session.commit()
+        # do something with the data
+        return redirect(url_for("index"))
+
+    except SignatureExpired:
+        # the token has expired
+        return 'The confirmation link has expired.'
+
+    except BadSignature:
+        # the token is invalid
+        return 'The confirmation link is invalid.'
 
      
-    
+
 
 
 #admin page route
