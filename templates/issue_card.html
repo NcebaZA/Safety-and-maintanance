@@ -5,6 +5,7 @@
         <a class="text-black text-decoration-none" href="/view?id={{issue['id']}}">
             <div class="card-body">
                 <h6 class="card-title">{{issue["referenceNo"]}}</h6>
+                <h5 class="fw-bold">{{issue["description"]}}</h5>
                 <p class="card-text">{{issue["campus"]}} | {{issue["campusBlock"]}} |
                     {% if issue["priorityOfIssue"]==0 %}{{'Low'}}{% elif issue["priorityOfIssue"]==1 %}{{'Mid'}}{% elif issue["priorityOfIssue"]==2 %}{{'High'}}{% endif %}
                 </p>
