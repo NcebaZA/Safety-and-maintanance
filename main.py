@@ -1,4 +1,4 @@
-from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
+from flask import Flask, abort, flash, redirect, render_template, request, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
@@ -99,8 +99,11 @@ def view():
     if request.method == "GET":
         report_id= request.args.get("id")
         rep = report.query.get(report_id)
-        
-        return render_template('view_details.html', report=rep)
+
+        if rep:
+            return render_template('view_details.html', report=rep)
+        else:
+            abort(404)
 
 
 # The function below is a test of gettinng all users from database table
