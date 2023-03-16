@@ -182,11 +182,12 @@ def update_user_info(id):
         user = users.query.get(id)
         if user:
             user.user_role = request.form.get("user_role")
+            print(f"{user.user_role}")
             db.session.commit()
             return redirect(url_for("show_users"))
         
     else:
-        return "You do not have the permission to access this page"
+       abort(403)
 
 #deleting users 
 """This is an endpoint for deleting users which takes in a argument of 'id' to delete a user"""
@@ -229,7 +230,7 @@ def add_notice():
         else:
             return render_template("/admin_screen/add_notice.html")
     else:
-        return "You do not have permission to access this page",403
+        abort(403)
     
 @app.route("/admin/notices")
 @flask_login.login_required
@@ -338,11 +339,13 @@ def confirmToken(token):
         # extract the user_id and email from the data
         user_id = data['user_id']
         user_info = users.query.get(user_id)
-        if user-info.is_confrimed():
-            return redirect(urk_for("index"))
-        user_info.confirmed = True
-        db.session.commit()
-        # do something with the data
+        if user_info.confirmed ==1:
+            return redirect(url_for("index"))
+        else:
+            # do something with the data
+            user_info.confirmed = True
+            db.session.commit()
+      
         return redirect(url_for("index"))
 
     except SignatureExpired:
