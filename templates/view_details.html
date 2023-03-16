@@ -149,7 +149,9 @@
                     <p id="priority-type">{% if report["priorityOfIssue"]==0 %}{{'Low'}}{% elif
                         report["priorityOfIssue"]==1 %}{{'Mid'}}{% elif report["priorityOfIssue"]==2 %}{{'High'}}{%
                         endif %}</p>
+                    {% if current_user.user_role == "foreman" %}
                     <span id="edit-priority" class="btn material-symbols-outlined border border-0">edit</span>
+                    {% endif %}
                 </div>
             </div>
 
@@ -159,7 +161,9 @@
                 </div>
                 <div class="col d-flex inline my-3 gap-3" id="status-block">
                     <p id="status-type">{{report["issueStatus"]}}</p>
+                    {% if current_user.user_role == "foreman" %}
                     <span id="edit-status" class="btn material-symbols-outlined border border-0">edit</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
