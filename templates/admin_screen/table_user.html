@@ -1,15 +1,7 @@
 {%extends "base.html"%}
 {% block head %}
-<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-<link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
-
-<!-- Custom styles for this template -->
-<link href="css/sb-admin-2.min.css" rel="stylesheet">
-
-<!-- Custom styles for this page -->
-<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">{% endblock %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
 {% block content %}
 
 <body id="page-top">
@@ -22,7 +14,6 @@
 
             <!-- Main Content -->
             <div id="content">
-
 
                 <!-- End of Topbar -->
 
@@ -51,6 +42,17 @@
                                     </thead>
                                     <tbody>
                                         {% for user in all_users %}
+                                        <script>
+                                            $(document).ready(function () {
+                                                var delete_button = $("delete{{user.id}}")
+                                                $("#delete{{user.id}}").on('load', function () {
+
+                                                    //delete link "/admin/users/delete?id={{user.id}}"
+
+                                                });
+                                            });
+                                        </script>
+
                                         <tr>
                                             <td>{{user.id}}</td>
                                             <td>{{user.first_name}}</td>
@@ -58,11 +60,125 @@
                                             <td>{{user.email}}</td>
                                             <td>{{user.username}}</td>
                                             <td>{{user.user_role}}</td>
-                                            <td> <a href="/admin/users/delete?id={{user.id}}"><button class="btn btn-danger">Delete</button>
-                                                </a> <a><button class="btn btn-primary">Modify</button></td>
-                                            </a>
+                                            <td> <button class="btn btn-danger" {%if
+                                                        user.id==current_user.id%}disabled{%endif%}  data-bs-toggle="modal" data-bs-target="#deleteModal{{user.id}}">Delete</button>
+                                                <button class="btn btn-primary " data-bs-toggle="modal"
+                                                    data-bs-target="#exampleModal{{user.id}}" {%if
+                                                    user.id==current_user.id%}disabled{%endif%}
+                                                    data-users="{{user}}">Modify</button></td>
+
+                                            <!-- Modal confirm delete -->
+                                            <div class="modal fade" id="deleteModal{{user.id}}" tabindex="-1"
+                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Confrim Delete</h1>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                          
+                                                                <p> Are you sure you want to delete?</p>
+                                                                <div>
+                                                                <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Close</button>
+                                                                <a href="/admin/users/delete?id={{user.id}}">
+                                                            <button type="submit" class="btn btn-danger" >Confrim Delete</button></div></a>
+                                                            
+                                                           
+                                                        </div>
+                                                      
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="exampleModal{{user.id}}" tabindex="-1"
+                                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-fullscreen">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Edit
+                                                                user
+                                                                info</h1>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form method="POST" id="updateForm{{user.id}}"
+                                                                action="/admin/update-user/{{user.id}}">
+
+                                                                <label for="name" class="label">Name:</label>
+
+                                                                <input type="text" id="name" class="form-control mt-3"
+                                                                    placeholder="Enter user name" name="name"
+                                                                    value="{{user.first_name}}" readonly>
+
+
+
+                                                                <label for="surname"
+                                                                    class="label mt-3 mb-3">Surname:</label>
+
+                                                                <input type="text" id="surname" class="form-control"
+                                                                    placeholder="Enter user surname" name="surname"
+                                                                    value="{{user.surname}}" readonly>
+
+
+
+                                                                <label for="email" class="mt-3 mb-3">Email:</label>
+
+                                                                <input type="text" id="email" class="form-control"
+                                                                    placeholder="Enter user email" name="email"
+                                                                    value="{{user.email}}" readonly>
+
+
+
+
+
+
+
+                                                                <label for="username"
+                                                                    class="label mt-3 mb-3 ">Username:</label>
+
+                                                                <input type="text" id="username" class="form-control"
+                                                                    placeholder="Enter your username" name="username"
+                                                                    value="{{user.username}}" readonly>
+
+
+                                                                <label for="user role" class="mt-3 mb-3 ">User
+                                                                    role:</label>
+                                                                <select id="user_role" name="user_role"
+                                                                    class="form-select form-select-sm">
+                                                                    <option value="" {% if not user.user_role
+                                                                        %}selected{% endif %} disabled>Choose user role
+                                                                    </option>
+                                                                    <option value="user" {% if
+                                                                        user.user_role|string=='user' %}selected{% endif
+                                                                        %}>User</option>
+                                                                    <option value="foreman" {% if
+                                                                        user.user_role|string=='foreman' %}selected{%
+                                                                        endif %}>Zone foreman</option>
+                                                                    <option value="admin" {% if
+                                                                        user.user_role|string=='admin' %}selected{%
+                                                                        endif %}>Admin</option>
+                                                                </select>
+
+                                                            </form>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-primary"
+                                                                form="updateForm{{user.id}}">Save
+                                                                changes</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
 
                                         </tr>
+
                                         {%endfor%}
 
 
@@ -90,29 +206,6 @@
     </div>
     <!-- End of Page Wrapper -->
 
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/datatables-demo.js"></script>
 
 </body>
 

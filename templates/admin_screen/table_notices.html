@@ -1,15 +1,6 @@
-
 {% block head %}
-<link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-<link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
-
-<!-- Custom styles for this template -->
-<link href="css/sb-admin-2.min.css" rel="stylesheet">
-
-<!-- Custom styles for this page -->
-<link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">{% endblock %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
 {% block content %}
 
 <body id="page-top">
@@ -38,6 +29,7 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    
 
                                     <!-- Check if all notices is empty  -->
                                     {%if all_notices%}
@@ -51,24 +43,88 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
-                                    <!-- If all_notices is not empty then generate  -->
+
+                                        <!-- If all_notices is not empty then generate  -->
                                         {% for notice in all_notices %}
+                                        <script>
+                                            $(document).ready(function () {
+                                                $('#editNotice{{notice.id}}').on('input', function () {
+                                                    var maxLength = $(this).attr('maxlength');
+                                                    var currentLength = $(this).val().length;
+                                                    var remaining = maxLength - currentLength;
+                                                    $('#counter{{notice.id}}').text("Words Remaining: "+remaining);
+                                                });
+                                            });
+                                            $(document).ready(function () {
+                                                $('#modifyButton{{notice.id}}').on('click', function () {
+                                                    var maxLength = $('#editNotice{{notice.id}}').attr('maxlength');
+                                                    var currentLength = $('#editNotice{{notice.id}}').val().length;
+                                                    var remaining = maxLength - currentLength;
+                                                    $('#counter{{notice.id}}').text("Words Remaining: "+remaining);
+                                                });
+                                            });
+    
+                                                              
+                                        </script>
                                         <tr>
                                             <td>{{notice.id}}</td>
                                             <td>{{notice.announcements}}</td>
                                             <td>{{notice.datePosted}}</td>
                                             <td>{{notice.users.first_name}} {{notice.users.surname}}</td>
-                                            <td> <a href="/admin/notices?delete={{notice.id}}"><button class="btn btn-danger">Delete</button>
-                                                </a> <a><button class="btn btn-primary">Modify</button></td>
+                                            <td> <a href="/admin/notices?delete={{notice.id}}"><button
+                                                        class="btn btn-danger">Delete</button>
+                                                        <!-- Button trigger modal -->
+                                                </a> <a><button class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#noticeModal{{notice.id}}" id="modifyButton{{notice.id}}">Modify</button></td>
                                             </a>
 
-                                        </tr>
+                                        </tr> 
+                                        <script> 
+                                            $(document).ready(function () {
+                              $('#noticeModal{{notice.id}}').on('hidden.bs.modal', function () {
+                                  
+                                location.reload()
+                              });
+                          });
+                                             </script>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="noticeModal{{notice.id}}" tabindex="-1"
+                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit notice
+                                                        </h1>
+                                                        
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"  id="closeModal">
+                                                           
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="POST" action="/admin/update-notice/{{notice.id}}" id="updateNotice{{notice.id}}">
+                                                            
+                                                            <div class="mb-3">
+                                                              <label for="" class="form-label">Announcement</label>
+                                                              <textarea class="form-control" name="editNotice" id="editNotice{{notice.id}}" rows="3" maxlength="255">{{notice.announcements}}</textarea>
+                                                            </div>
+                                                            <div id="counter{{notice.id}}">255</div>
+
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary" form="updateNotice{{notice.id}}">Save
+                                                            changes</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                         {% endfor %}
-                                            
-                                    <!-- Else notices are empty then show a message letting them know  -->
-                                       {% else %}
-                                            <div>There are no notices</div>
+
+                                        <!-- Else notices are empty then show a message letting them know  -->
+                                        {% else %}
+                                        <div>There are no notices</div>
                                         {%endif%}
 
 
@@ -102,22 +158,6 @@
 
 
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-
-    <!-- Page level plugins -->
-    <script src="vendor/datatables/jquery.dataTables.min.js"></script>
-    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-    <!-- Page level custom scripts -->
-    <script src="js/demo/datatables-demo.js"></script>
 
 </body>
 

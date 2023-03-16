@@ -19,7 +19,7 @@ class users(db.Model,flask_login.UserMixin):
         username = db.Column(db.String(40), nullable=False, unique = True )
         profile_picture = db.Column(db.LargeBinary)
         user_role = db.Column(db.String(25))
-        confirmed = db.Column(db.Boolean)
+        confirmed = db.Column(db.Boolean, default=False)
         #add relationships
 
         """relationship with account history table"""
@@ -32,7 +32,13 @@ class users(db.Model,flask_login.UserMixin):
         report_comment = db.relationship("report_comments", backref="users", lazy=True)
 
         """relationship with notice board"""
-        notice = db.relationship("notice_board", backref="users", lazy=True)       
+        notice = db.relationship("notice_board", backref="users", lazy=True)  
+
+        """User functions to do stuff"""
+
+        def is_confirmed(self):
+                return self.confirmed
+             
 
 
 
