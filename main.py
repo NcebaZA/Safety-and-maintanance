@@ -136,6 +136,44 @@ def login():
         
      return render_template("login.html")
 
+#sign up route
+@app.route("/sign_up", methods=["POST","GET"])
+def sign_up():
+
+     if request.method == "POST":
+          first_name =  request.form.get("first_name")
+          surname = request.form.get("surname")
+          username = request.form.get("username")
+          email = request.form.get("email")
+          password = request.form.get("password")
+          confirm_password = request.form.get("confirm-password")
+          print(first_name, surname, username, email, password, confirm_password)
+      
+      # process the sign-up data here
+          #Check if user name or email has already been taken
+          if users.query.filter_by(email=email).first() or users.query.filter_by(username=username).first():
+               flash("Username or email already in use")
+               return redirect(url_for("sign_up"))
+               
+          
+          else:
+               #check if password matches confirm passoword
+               if password==confirm_password:
+                #if it has not been taken then create a new user
+                new_user = users(first_name=first_name, surname=surname, email=email,password=password, username = username, user_role = "user")
+                db.session.add(new_user)
+                db.session.commit()
+                from send_email import sendtoken
+                sendtoken(email=email)
+                return redirect(url_for("login"))
+               else:
+                   flash("Error passwords do not match","not_match_password")
+                   return redirect(url_for("sign_up"))
+     else:
+        # render the sign-up form here
+         return render_template("/sign_up.html")
+
+
 @app.route("/logout")
 def logout():
      flask_login.logout_user()
