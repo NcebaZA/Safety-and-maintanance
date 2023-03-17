@@ -1,5 +1,5 @@
 import base64
-from flask import Flask, abort, flash, jsonify, redirect, render_template, request, url_for, send_file
+from flask import Flask, abort, flash, jsonify, redirect, render_template, request, url_for
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
