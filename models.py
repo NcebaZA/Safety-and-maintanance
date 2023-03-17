@@ -49,7 +49,7 @@ class report(db.Model):
         campus = db.Column(db.String(20), nullable =False)
         campusBlock = db.Column(db.String(30))
 
-        roomNumber = db.Column(db.String(5))
+        roomNumber = db.Column(db.String(20))
         priorityOfIssue = db.Column(db.Integer, default=0)
         reporter =  db.Column(db.String(50))
         dateReported = db.Column(db.DateTime, default = datetime.utcnow)
