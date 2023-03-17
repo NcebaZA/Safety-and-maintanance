@@ -396,6 +396,8 @@ def show_issues():
             gbl['cur_args'] = argsPar
 
         filtered_data = None
+
+        
         sql_query = 'SELECT * FROM report'
 
         if ('keyword' in main['cur_args'].keys()) or (
@@ -408,7 +410,7 @@ def show_issues():
             if main['cur_args']['keyword'] != ['']:
                 sql_query += " ("
                 for param in main['cur_args']['keyword']:
-                    sql_query += f" report.referenceNo LIKE '{param}%'"
+                    sql_query += f" report.\"referenceNo\" LIKE '{param}%'"
                 sql_query += " )"
 
         if 'campus' in main['cur_args'].keys():
@@ -417,7 +419,7 @@ def show_issues():
                     sql_query += " AND"
                 sql_query += " ("
                 for param in main['cur_args']['campus']:
-                    sql_query += f" report.campus='{param}'"
+                    sql_query += f" report.\"campus\"='{param}'"
                     if param != main['cur_args']['campus'][-1]:
                         sql_query += ' OR'
                 sql_query += " )"
@@ -428,7 +430,7 @@ def show_issues():
                     sql_query += " AND"
                 sql_query += " ("
                 for param in main['cur_args']['block']:
-                    sql_query += f" report.campusBlock='{param}'"
+                    sql_query += f" report.\"campusBlock\"='{param}'"
                     if param != main['cur_args']['block'][-1]:
                         sql_query += ' OR'
                 sql_query += " )"
@@ -441,11 +443,11 @@ def show_issues():
                     sql_query += " AND"
                 sql_query += " ("
                 for param in main['cur_args']['priority']:
-                    sql_query += f" report.priorityOfIssue='{key_val[param]}'"
+                    sql_query += f" report.\"priorityOfIssue\"='{key_val[param]}'"
                     if param != main['cur_args']['priority'][-1]:
                         sql_query += ' OR'
                 sql_query += " )"
-
+        
         print(f"sql_query | {sql_query}")
         filtered_data = report.query.from_statement(db.text(sql_query))
 
