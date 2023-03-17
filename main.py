@@ -570,6 +570,31 @@ def add_report():
         return render_template("reportscreen.html")
     
 
+@app.route("/account-confirm/<token>")
+def confirmToken(token):
+    try:
+        # load the token and verify the signature
+        data = serializer.loads(token, max_age=3600)
+
+        # extract the user_id and email from the data
+        user_id = data['user_id']
+        user_info = users.query.get(user_id)
+        if user_info.confirmed ==1:
+            return redirect(url_for("index"))
+        else:
+            # do something with the data
+            user_info.confirmed = True
+            db.session.commit()
+      
+        return redirect(url_for("index"))
+
+    except SignatureExpired:
+        # the token has expired
+        return 'The confirmation link has expired.'
+
+    except BadSignature:
+        # the token is invalid
+        return 'The confirmation link is invalid.'
 
 if __name__ == "__main__":
     
