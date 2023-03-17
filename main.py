@@ -9,6 +9,7 @@ from flask_login import current_user
 from flask_mail import Mail, Message
 from threading import Thread
 import io
+import os
 # testing by M Mngadi
 from random import randint
 # end testing
@@ -19,24 +20,25 @@ login_manager = flask_login.LoginManager()
 login_manager.login_view = "login"
 
 # database config
-database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
-    dbuser="bgoscsfb",
-    dbpass="xOIQsgnH2fM5hLsfmVLT_UZbrdlPkD78",
-    dbhost="isilo.db.elephantsql.com",
-    dbname="bgoscsfb"
+database_uri = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}?sslmode=require'.format(
+    dbuser="maintenance_app",
+    dbpass= os.environ.get('DBPASS'),
+    dbhost="dpg-cg9rjokeoogm5ca5jvfg-a.frankfurt-postgres.render.com",
+    dbname="maintenance"
 )
+print(database_uri)
 mail_settings = {
-    "MAIL_SERVER": 'sandbox.smtp.mailtrap.io',
-    "MAIL_PORT": 2525,
-    "MAIL_USE_TLS": True,
-    "MAIL_USE_SSL": False,
-    "MAIL_USERNAME": '940727a31f1842',
-    "MAIL_PASSWORD": '0a5e18353ac097',
-    "MAIL_SUBJECT_PREFIX": 'Maitainace App'
+    "MAIL_SERVER": 'smtp.gmail.com',
+    "MAIL_PORT": 465,
+    "MAIL_USE_TLS": False,
+    "MAIL_USE_SSL": True,
+    "MAIL_USERNAME":os.environ.get('MAIL_USER') ,
+    "MAIL_PASSWORD": os.environ.get('MAIL_PASS'),
+    "MAIL_SUBJECT_PREFIX": 'Maintenance App'
 }
-app.config["SQLALCHEMY_DATABASE_URI"] =  "sqlite:///project.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://maintenance_app:c0RtZ36Ja4y0XbhJx3aPb1htNO5PYVPB@dpg-cg9rjokeoogm5ca5jvfg-a.frankfurt-postgres.render.com/maintenance?sslmode=require"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = "thisismyverysecretkey"
+app.config['SECRET_KEY'] = os.environ.get('SECRETKEY')
 app.config.update(mail_settings)
 mail = Mail(app)
 serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -66,6 +68,7 @@ migrate = Migrate(app, db)
 #setting up login manager which is used for user authentication
 
 login_manager.init_app(app)
+
 
 
 
@@ -527,6 +530,7 @@ def add_report():
         return render_template('report_added_sucess.html')
     else:
         return render_template("reportscreen.html")
+    
 
 
 if __name__ == "__main__":
