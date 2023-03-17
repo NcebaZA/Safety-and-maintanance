@@ -47,7 +47,7 @@ class report(db.Model):
         description = db.Column(db.String(255))
         referenceNo = db.Column(db.String(10))
         campus = db.Column(db.String(20), nullable =False)
-        campusBlock = db.Column(db.String(5))
+        campusBlock = db.Column(db.String(30))
 
         roomNumber = db.Column(db.String(5))
         priorityOfIssue = db.Column(db.Integer, default=0)
